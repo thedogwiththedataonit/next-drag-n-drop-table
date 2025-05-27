@@ -1,5 +1,5 @@
 import React from "react";
-import { DraggableProvided } from "react-beautiful-dnd";
+import { DraggableProvided } from "@hello-pangea/dnd";
 import { Email } from "@/lib/types";
 import { formatRelativeTime } from "@/lib/utils";
 
@@ -92,7 +92,24 @@ const EmailItem: React.FC<EmailItemProps> = ({
         </div>
       </td>
 
-      
+      {/* Audience Cell */}
+      <td 
+        className="w-40 p-4"
+      >
+        {
+          email.audience
+        }
+      </td>
+
+      {/* Updated At Cell */}
+      <td 
+        className="w-40 p-4"
+      >
+        {
+          email.updatedAt
+        }
+      </td>
+
       {/* Author Cell */}
       <td 
         className="w-40 p-4"

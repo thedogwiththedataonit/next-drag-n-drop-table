@@ -21,7 +21,7 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
 
   return (
     <div className="flex flex-col items-start mb-4">
-      <div className="w-full bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+      <div className="w-full bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden text-sm">
         <div className="flex">
           <button
             onClick={() => onSort('createdAt')}
@@ -44,6 +44,29 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
             <span className="flex items-center justify-between">
               Title
               <span className="ml-2">{getSortIcon('title')}</span>
+            </span>
+          </button>
+          <button
+            onClick={() => onSort('audience')}
+            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${
+              sortField === 'audience' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
+            }`}
+          >
+            <span className="flex items-center justify-between">
+              Audience
+              <span className="ml-2">{getSortIcon('audience')}</span>
+            </span>
+          </button>
+           
+          <button
+            onClick={() => onSort('updatedAt')}
+            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${
+              sortField === 'updatedAt' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
+            }`}
+          >
+            <span className="flex items-center justify-between">
+              Updated At
+              <span className="ml-2">{getSortIcon('updatedAt')}</span>
             </span>
           </button>
           <button

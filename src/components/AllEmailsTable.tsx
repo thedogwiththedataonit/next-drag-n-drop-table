@@ -7,7 +7,7 @@ import { sortDataMap, SortField, SortOrder } from "@/lib/utils";
 import { EmailSheet } from "@/components/email-sheet";
 import EmailItem from "./EmailItem";
 import SortableTableHeader from "./SortableTableHeader";
-import { DraggableProvided } from "react-beautiful-dnd";
+import { DraggableProvided } from "@hello-pangea/dnd";
 
 interface AllEmailsTableProps {
   initial: DataMap;
@@ -19,8 +19,8 @@ interface AllEmailsTableProps {
 const createMockDraggableProvided = (): DraggableProvided => ({
   innerRef: () => {},
   draggableProps: {
-    'data-rbd-draggable-context-id': '',
-    'data-rbd-draggable-id': '',
+    'data-rfd-draggable-context-id': '',
+    'data-rfd-draggable-id': '',
     style: undefined,
   },
   dragHandleProps: null,

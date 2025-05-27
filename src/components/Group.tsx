@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Draggable } from "react-beautiful-dnd";
+import { Draggable } from "@hello-pangea/dnd";
 import { GroupProps } from "@/lib/types";
 import EmailList from "./EmailList";
 
@@ -15,6 +15,7 @@ const Group: React.FC<GroupProps> = ({
   const handleToggle = () => {
     setIsExpanded(!isExpanded);
   };
+  
 
   return (
     <Draggable draggableId={title} index={index}>

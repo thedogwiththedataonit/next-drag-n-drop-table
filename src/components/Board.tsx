@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import dynamic from 'next/dynamic';
-import { DropResult } from "react-beautiful-dnd";
+import { DropResult } from "@hello-pangea/dnd";
 import { useQueryState } from "nuqs";
 import { BoardProps } from "@/lib/types";
 import { reorder, reorderQuoteMap } from "@/lib/reorder";
@@ -13,22 +13,15 @@ import SortableTableHeader from "./SortableTableHeader";
 import Group from "./Group";
 
 const DragDropContext = dynamic(
-  () => import('react-beautiful-dnd').then(mod => {
+  () => import('@hello-pangea/dnd').then(mod => {
     return mod.DragDropContext;
   }),
   {ssr: false},
 );
 
 const Droppable = dynamic(
-  () => import('react-beautiful-dnd').then(mod => {
+  () => import('@hello-pangea/dnd').then(mod => {
     return mod.Droppable;
-  }),
-  {ssr: false},
-);
-
-const Draggable = dynamic(
-  () => import('react-beautiful-dnd').then(mod => {
-    return mod.Draggable;
   }),
   {ssr: false},
 );

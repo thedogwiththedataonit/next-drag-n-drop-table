@@ -5,6 +5,8 @@ export interface Email {
   summary: string;
   status: string;
   createdAt: string;
+  updatedAt: string;
+  audience: string;
   //type: string;
 }
 

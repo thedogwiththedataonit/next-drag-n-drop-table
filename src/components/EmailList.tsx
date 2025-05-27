@@ -1,5 +1,5 @@
 import React from "react";
-import { Droppable, Draggable, DroppableProvided } from "react-beautiful-dnd";
+import { Droppable, Draggable, DroppableProvided } from "@hello-pangea/dnd";
 import { Email } from "@/lib/types";
 import EmailItem from "./EmailItem";
 
@@ -82,6 +82,7 @@ const EmailList: React.FC<EmailListProps> = ({
       direction="vertical"
       isDropDisabled={isDropDisabled}
       ignoreContainerClipping={true}
+      isCombineEnabled={false}
     >
       {(dropProvided, dropSnapshot) => (
         <div
