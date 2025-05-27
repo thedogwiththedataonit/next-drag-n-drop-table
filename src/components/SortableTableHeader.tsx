@@ -1,5 +1,5 @@
 import React from "react";
-import { SortField, SortOrder, tableColumnWidths } from "@/lib/utils";
+import { SortField, tableColumnWidths } from "@/lib/utils";
 
 interface SortableTableHeaderProps {
   sortField: string;
