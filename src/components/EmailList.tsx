@@ -2,7 +2,8 @@ import React from "react";
 import { Droppable, Draggable, DroppableProvided } from "@hello-pangea/dnd";
 import { Email } from "@/lib/types";
 import EmailItem from "./EmailItem";
-
+import { Move } from "lucide-react";
+import { Button } from "./ui/button";
 interface EmailListProps {
   listId: string;
   listType: string;
@@ -11,6 +12,7 @@ interface EmailListProps {
   isDropDisabled?: boolean;
   style?: React.CSSProperties;
   onEmailClick?: (email: Email) => void;
+  deleteGroup: () => void;
 }
 
 const getBackgroundColor = (isDraggingOver: boolean, isDraggingFrom: boolean): string => {
@@ -48,10 +50,26 @@ interface InnerListProps {
   emails: Email[];
   dropProvided: DroppableProvided;
   onEmailClick?: (email: Email) => void;
+  deleteGroup: () => void;
 }
 
-function InnerList({ emails, dropProvided, onEmailClick }: InnerListProps) {
+function InnerList({ emails, dropProvided, onEmailClick, deleteGroup }: InnerListProps) {
   console.log(emails)
+  if (emails.length === 0) {
+    return (
+      <div ref={dropProvided.innerRef} className="flex flex-col gap-4 items-center justify-center p-8 text-muted-foreground">
+        <div className="flex items-center justify-center gap-1">
+          <Move className="w-4 h-4 mr-2" />
+          <p className="text-sm italic">
+            Drag emails into this group
+          </p>
+        </div>
+        <Button variant="destructive" size="sm" onClick={() => deleteGroup()}> 
+          Delete Group
+        </Button>
+      </div>
+    );
+  }
   return (
     <table className="w-full border-collapse table-fixed">
       <tbody 
@@ -74,6 +92,7 @@ const EmailList: React.FC<EmailListProps> = ({
   isDropDisabled = false,
   style,
   onEmailClick,
+  deleteGroup,  
 }) => {
   return (
     <Droppable
@@ -106,10 +125,10 @@ const EmailList: React.FC<EmailListProps> = ({
             <div 
               className="overflow-x-hidden overflow-y-auto max-h-full"
             >
-              <InnerList emails={emails} dropProvided={dropProvided} onEmailClick={onEmailClick} />
+              <InnerList emails={emails} dropProvided={dropProvided} onEmailClick={onEmailClick} deleteGroup={deleteGroup} />
             </div>
           ) : (
-            <InnerList emails={emails} dropProvided={dropProvided} onEmailClick={onEmailClick} />
+            <InnerList emails={emails} dropProvided={dropProvided} onEmailClick={onEmailClick} deleteGroup={deleteGroup} />
           )}
         </div>
       )}

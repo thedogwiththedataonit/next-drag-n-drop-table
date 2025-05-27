@@ -38,4 +38,6 @@ export interface GroupProps {
   index: number;
   isScrollable?: boolean;
   onEmailClick?: (email: Email) => void;
+  deleteGroup: () => void;
+  renameGroup?: (oldTitle: string, newTitle: string) => void;
 } 

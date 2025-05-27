@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Draggable } from "@hello-pangea/dnd";
 import { ChevronDown } from "lucide-react";
+import { toast } from "sonner";
 import { GroupProps } from "@/lib/types";
 import EmailList from "./EmailList";
 import { tableColumnWidths } from "@/lib/utils";
@@ -11,11 +12,47 @@ const Group: React.FC<GroupProps> = ({
   index,
   isScrollable = false,
   onEmailClick,
+  deleteGroup,
+  renameGroup
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingTitle, setEditingTitle] = useState(title);
 
   const handleToggle = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const handleTitleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent the toggle from triggering
+    setIsEditing(true);
+    setEditingTitle(title);
+  };
+
+  const handleTitleSave = () => {
+    const trimmedTitle = editingTitle.trim();
+    
+    if (trimmedTitle === "") {
+      setEditingTitle(title); // Revert to original if empty
+      setIsEditing(false);
+      return;
+    }
+
+    if (trimmedTitle !== title && renameGroup) {
+      renameGroup(title, trimmedTitle);
+      toast.success(`Group renamed from "${title}" to "${trimmedTitle}"`);
+    }
+    
+    setIsEditing(false);
+  };
+
+  const handleTitleInputKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleTitleSave();
+    } else if (e.key === "Escape") {
+      setEditingTitle(title); // Revert to original
+      setIsEditing(false);
+    }
   };
 
   // Calculate metrics for the group
@@ -65,8 +102,24 @@ const Group: React.FC<GroupProps> = ({
           >
             <div className="flex-1 p-4">
               <div className="flex items-center gap-2">
-
-                <h2 className="font-semibold text-lg select-none">{title}</h2>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editingTitle}
+                    onChange={(e) => setEditingTitle(e.target.value)}
+                    onKeyDown={handleTitleInputKeyDown}
+                    onBlur={handleTitleSave}
+                    className="font-semibold text-md bg-transparent border-none focus:outline-none focus:ring-0 focus:border-none"
+                    autoFocus
+                  />
+                ) : (
+                  <h2 
+                    className="font-semibold text-md select-none cursor-pointer hover:text-emerald-700 transition-colors"
+                    onClick={handleTitleClick}
+                  >
+                    {title}
+                  </h2>
+                )}
                 <ChevronDown
                   className={`h-5 w-5 transition-transform duration-200 ease-in-out ${isExpanded ? 'rotate-0' : 'rotate-180'
                     }`}
@@ -113,6 +166,7 @@ const Group: React.FC<GroupProps> = ({
                 emails={emails}
                 internalScroll={isScrollable}
                 onEmailClick={onEmailClick}
+                deleteGroup={deleteGroup}
                 style={{
                   backgroundColor: snapshot.isDragging ? "#f0fdf4" : undefined, // green-50
                 }}

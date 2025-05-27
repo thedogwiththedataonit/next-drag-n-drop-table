@@ -12,6 +12,7 @@ import { Email } from "@/lib/types";
 import { EmailSheet } from "@/components/email-sheet";
 import SortableTableHeader from "./SortableTableHeader";
 import Group from "./Group";
+import { Button } from "./ui/button";
 
 const DragDropContext = dynamic(
   () => import('@hello-pangea/dnd').then(mod => {
@@ -161,8 +162,77 @@ const Board: React.FC<BoardProps> = ({
     }
   };
 
+  const AddGroup = () => {
+    //add to the top of the list
+    const newGroup = `Group ${ordered.length + 1}`;
+    setOrdered([newGroup, ...ordered]);
+    setGroups({ ...groups, [newGroup]: [] });
+  };
+
+  const deleteGroup = (groupTitle: string) => {
+    // Check if group exists
+    if (!groups[groupTitle]) {
+      toast.error(`Group "${groupTitle}" not found`);
+      return;
+    }
+
+    // Check if group has emails - warn user
+    const emailCount = groups[groupTitle].length;
+    if (emailCount > 0) {
+      // Show warning that emails will be lost
+      if (!window.confirm(`Delete "${groupTitle}"? This will permanently remove ${emailCount} email${emailCount === 1 ? '' : 's'}.`)) {
+        return;
+      }
+    }
+
+    // Remove from ordered array
+    const newOrdered = ordered.filter(key => key !== groupTitle);
+    setOrdered(newOrdered);
+    
+    // Remove from groups object
+    const newGroups = { ...groups };
+    delete newGroups[groupTitle];
+    setGroups(newGroups);
+    
+    // Show success toast
+    if (emailCount > 0) {
+      toast.success(`Group "${groupTitle}" and ${emailCount} email${emailCount === 1 ? '' : 's'} deleted`);
+    } else {
+      toast.success(`Group "${groupTitle}" deleted successfully`);
+    }
+  };
+
+  const renameGroup = (oldTitle: string, newTitle: string) => {
+    // Check if new title already exists
+    if (groups[newTitle]) {
+      toast.error(`Group "${newTitle}" already exists`);
+      return;
+    }
+
+    // Update the ordered array
+    const newOrdered = ordered.map(title => title === oldTitle ? newTitle : title);
+    setOrdered(newOrdered);
+
+    // Update the groups object
+    const newGroups = { ...groups };
+    newGroups[newTitle] = newGroups[oldTitle];
+    delete newGroups[oldTitle];
+
+    // Update all emails in the group to reflect the new group name
+    newGroups[newTitle] = newGroups[newTitle].map(email => ({
+      ...email,
+      group: newTitle
+    }));
+
+    setGroups(newGroups);
+  };
+
   return (
     <div className="min-h-screen w-full p-4">
+
+      <Button variant="outline" size="sm" onClick={() => AddGroup()}> 
+        Add Group
+      </Button>
       {/* Sortable Column Headers */}
       <SortableTableHeader
         sortField={sortField}
@@ -194,6 +264,8 @@ const Board: React.FC<BoardProps> = ({
                   emails={groups[key]}
                   isScrollable={withScrollableColumns}
                   onEmailClick={handleEmailClick}
+                  deleteGroup={() => deleteGroup(key)}
+                  renameGroup={renameGroup}
                 />
               ))}
               {provided.placeholder}
