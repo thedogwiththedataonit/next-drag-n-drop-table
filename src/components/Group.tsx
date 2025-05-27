@@ -82,7 +82,7 @@ const Group: React.FC<GroupProps> = ({
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          className="flex flex-col w-full h-full mb-2"
+          className="flex flex-col w-full h-full"
         >
           {/* Column Header */}
           <div
@@ -90,17 +90,16 @@ const Group: React.FC<GroupProps> = ({
             {...provided.dragHandleProps}
             className={`
               flex items-center justify-start w-full
-              rounded-sm
               transition-colors duration-200 ease-in-out
               cursor-grab active:cursor-grabbing
               ${snapshot.isDragging
-                ? "bg-emerald-100 text-emerald-800"
-                : "bg-slate-300 text-slate-700 hover:bg-emerald-100 hover:text-emerald-800"
+                ? "bg-muted text-muted-foreground rounded-sm"
+                : "bg-background text-foreground hover:bg-muted/50"
               }
             `}
             aria-label={`${title} quote list`}
           >
-            <div className="flex-1 p-4">
+            <div className="flex-1 px-4 py-2">
               <div className="flex items-center gap-2">
                 {isEditing ? (
                   <input
@@ -109,49 +108,48 @@ const Group: React.FC<GroupProps> = ({
                     onChange={(e) => setEditingTitle(e.target.value)}
                     onKeyDown={handleTitleInputKeyDown}
                     onBlur={handleTitleSave}
-                    className="font-semibold text-md bg-transparent border-none focus:outline-none focus:ring-0 focus:border-none"
+                    className="font-semibold text-sm bg-transparent border-none focus:outline-none focus:ring-0 focus:border-none"
                     autoFocus
                   />
                 ) : (
                   <h2 
-                    className="font-semibold text-md select-none cursor-pointer hover:text-emerald-700 transition-colors"
+                    className="font-semibold text-sm select-none cursor-pointer hover:text-primary transition-colors"
                     onClick={handleTitleClick}
                   >
                     {title}
                   </h2>
                 )}
                 <ChevronDown
-                  className={`h-5 w-5 transition-transform duration-200 ease-in-out ${isExpanded ? 'rotate-0' : 'rotate-180'
+                  className={`h-5 w-5  text-foreground/40 transition-transform duration-200 ease-in-out ${isExpanded ? 'rotate-0' : 'rotate-180'
                     }`}
                 />
               </div>
             </div>
-            <div className="h-full p-4" style={{ width: tableColumnWidths().audience }}>test</div>
-            <div className="h-full p-4" style={{ width: tableColumnWidths().updatedAt }}>test</div>
-            <div className="h-full p-4" style={{ width: tableColumnWidths().sent }}>
+            <div className="h-full px-4" style={{ width: tableColumnWidths().audience }}></div>
+            <div className="h-full px-4" style={{ width: tableColumnWidths().updatedAt }}></div>
+            <div className="h-full px-4" style={{ width: tableColumnWidths().sent }}>
               <span className="text-sm font-medium">
                 {groupMetrics.totalSent.toLocaleString()}
               </span>
             </div>
-            <div className="h-full p-4" style={{ width: tableColumnWidths().openRate }}>
+            <div className="h-full px-4" style={{ width: tableColumnWidths().openRate }}>
               <span className="text-sm font-medium">
                 {groupMetrics.avgOpenRate.toFixed(1)}%
               </span>
             </div>
-            <div className="h-full p-4" style={{ width: tableColumnWidths().clickRate }}>
+            <div className="h-full px-4" style={{ width: tableColumnWidths().clickRate }}>
               <span className="text-sm font-medium">
                 {groupMetrics.avgClickRate.toFixed(1)}%
               </span>
             </div>
-            <div className="h-full p-4" style={{ width: tableColumnWidths().status }}>test</div>
+            <div className="h-full px-4" style={{ width: tableColumnWidths().status }}></div>
           </div>
 
           {/* Table Container */}
           <div
             className={`
-              w-full overflow-hidden rounded-b-lg
-              ${snapshot.isDragging ? "bg-emerald-50" : "bg-white"}
-              shadow-md 
+              w-full overflow-hidden
+              ${snapshot.isDragging ? "bg-muted rounded-sm shadow-md " : "bg-background"}
               transition-all duration-300 ease-in-out
               ${isExpanded
                 ? "opacity-100 max-h-[800px]"

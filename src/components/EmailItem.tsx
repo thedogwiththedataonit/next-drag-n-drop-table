@@ -1,7 +1,9 @@
 import React from "react";
 import { DraggableProvided } from "@hello-pangea/dnd";
 import { Email } from "@/lib/types";
-import { formatRelativeTime, tableColumnWidths } from "@/lib/utils";
+import { cn, formatRelativeTime, tableColumnWidths } from "@/lib/utils";
+import { CirclePause } from "lucide-react";
+import { FilePen } from "lucide-react";
 
 interface EmailItemProps {
   email: Email;
@@ -61,11 +63,12 @@ const EmailItem: React.FC<EmailItemProps> = ({
         cursor: isDragging ? 'grabbing' : 'pointer',
       }}
       className={`
-        bg-white hover:bg-slate-100 transition-colors cursor-pointer
-        ${isGroupedOver ? 'bg-slate-100' : ''}
-        border-2
+        text-sm group
+        bg-background hover:bg-muted/40 transition-colors cursor-pointer
+        border-none
+        ${isGroupedOver ? 'bg-muted/40' : ''}
         flex flex-row justify-start items-center
-        ${isDragging ? "shadow-lg shadow-slate-300" : "shadow-none"}
+        ${isDragging ? "shadow-lg" : "shadow-none"}
       `}
       data-is-dragging={isDragging}
       data-testid={email.id}
@@ -74,10 +77,10 @@ const EmailItem: React.FC<EmailItemProps> = ({
       
       {/* Name Cell */}
       <td 
-        className={`p-4 flex-1`}
+        className={`px-4 py-2 flex-1 border-l-2 group-hover:border-muted-foreground border-transparent border-r-0`}
       >
         <div className="flex flex-col">
-          <div className="text-sm leading-relaxed">
+          <div className="leading-relaxed">
             {email.name}
           </div>
         </div>
@@ -85,7 +88,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Audience Cell */}
       <td 
-        className={`p-4`}
+        className={`px-4 py-2 overflow-hidden text-ellipsis whitespace-nowrap text-muted-foreground`}
         style={{ width: tableColumnWidths().audience }}
       >
         {
@@ -95,7 +98,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Updated At Cell */}
       <td 
-        className={`p-4`}
+        className={`px-4 py-2 overflow-hidden text-ellipsis whitespace-nowrap text-muted-foreground`}
         style={{ width: tableColumnWidths().updatedAt }}
       >
         {
@@ -105,7 +108,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Sent Cell */}
       <td 
-        className={`p-4`}
+        className={`px-4 py-2 overflow-hidden text-ellipsis whitespace-nowrap text-muted-foreground`}
         style={{ width: tableColumnWidths().sent }}
       >
         {
@@ -115,7 +118,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Open Rate Cell */}
       <td 
-        className={`p-4`}
+        className={`px-4 py-2 overflow-hidden text-ellipsis whitespace-nowrap text-muted-foreground`}
         style={{ width: tableColumnWidths().openRate }}
       >
         {
@@ -125,7 +128,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Click Rate Cell */}
       <td 
-        className={`p-4`}
+        className={`px-4 py-2 overflow-hidden text-ellipsis whitespace-nowrap text-muted-foreground`}
         style={{ width: tableColumnWidths().clickRate }}
       >
         {
@@ -135,15 +138,36 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Author Cell */}
       <td 
-        className={`p-4`}
+        className={`px-4 py-2 overflow-hidden text-ellipsis whitespace-nowrap text-muted-foreground`}
         style={{ width: tableColumnWidths().status }}
       >
-        {
-          email.status
-        }
+        <span className={cn(
+            "w-fit px-0 py-0 rounded-full text-sm font-medium flex items-center gap-1",
+            email.status === "Active" || email.status === "Scheduled" || email.status === "Published" ? "bg-transparent text-green-700 dark:text-green-600" :
+              email.status === "Draft" ? "bg-transparent text-gray-600" :
+                  email.status === "Paused" ? "bg-transparent text-red-700" :
+                    "bg-transparent text-gray-800"
+          )}>
+            {email.status === "Active" || email.status === "Scheduled" || email.status === "Published" ? (
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.6)] animate-pulse"></div>
+            ) : 
+             email.status === "Draft" ? (
+              <FilePen className="h-3 w-3" />
+            ) : email.status === "Paused" ? (
+              <CirclePause className="h-3 w-3" />
+            ) : null}
+            {email.status === "Sent" ? (
+              <span className="text-sm text-green-700 dark:text-green-600">{formatRelativeTime(email.sentTime)}</span>
+            ) :
+            email.status === "Brew Recommendation" ? (
+              <span className="text-sm text-gray-600 flex items-center gap-1"><FilePen className="h-3 w-3" />Draft</span>
+            ) :
+            email.status}
+          </span>
       </td>
     </tr>
   );
 };
+
 
 export default React.memo(EmailItem); 

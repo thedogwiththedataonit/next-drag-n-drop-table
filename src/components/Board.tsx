@@ -13,19 +13,20 @@ import { EmailSheet } from "@/components/email-sheet";
 import SortableTableHeader from "./SortableTableHeader";
 import Group from "./Group";
 import { Button } from "./ui/button";
+import Link from "next/link";
 
 const DragDropContext = dynamic(
   () => import('@hello-pangea/dnd').then(mod => {
     return mod.DragDropContext;
   }),
-  {ssr: false},
+  { ssr: false },
 );
 
 const Droppable = dynamic(
   () => import('@hello-pangea/dnd').then(mod => {
     return mod.Droppable;
   }),
-  {ssr: false},
+  { ssr: false },
 );
 
 const Board: React.FC<BoardProps> = ({
@@ -37,19 +38,19 @@ const Board: React.FC<BoardProps> = ({
 }) => {
   const [groups, setGroups] = useState(initial);
   const [ordered, setOrdered] = useState(Object.keys(initial));
-  
+
   // Email sheet state
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  
+
   // Use nuqs for URL state management
-  const [sortField, setSortField] = useQueryState('sortBy', { 
+  const [sortField, setSortField] = useQueryState('sortBy', {
     defaultValue: initialSortField,
-    shallow: false 
+    shallow: false
   });
-  const [sortOrder, setSortOrder] = useQueryState('order', { 
+  const [sortOrder, setSortOrder] = useQueryState('order', {
     defaultValue: initialSortOrder,
-    shallow: false 
+    shallow: false
   });
 
   // Apply sorting when sort parameters change
@@ -126,13 +127,13 @@ const Board: React.FC<BoardProps> = ({
       const groupName = ordered[source.index];
       const reorderedOrder = reorder(ordered, source.index, destination.index);
       setOrdered(reorderedOrder);
-      
+
       // Determine direction and show appropriate toast
       const direction = destination.index > source.index ? "down" : "up";
-      const positions = destination.index > source.index 
+      const positions = destination.index > source.index
         ? `position ${source.index + 1} to ${destination.index + 1}`
         : `position ${source.index + 1} to ${destination.index + 1}`;
-      
+
       toast.success(`Group "${groupName}" moved ${direction} from ${positions}`);
       return;
     }
@@ -151,10 +152,10 @@ const Board: React.FC<BoardProps> = ({
     if (source.droppableId === destination.droppableId) {
       // Moving within the same list
       const direction = destination.index > source.index ? "down" : "up";
-      const positions = destination.index > source.index 
+      const positions = destination.index > source.index
         ? `position ${source.index + 1} to ${destination.index + 1}`
         : `position ${source.index + 1} to ${destination.index + 1}`;
-      
+
       toast.success(`Email "${movedEmail.name}" moved ${direction} within "${source.droppableId}" from ${positions}`);
     } else {
       // Moving between different lists
@@ -188,12 +189,12 @@ const Board: React.FC<BoardProps> = ({
     // Remove from ordered array
     const newOrdered = ordered.filter(key => key !== groupTitle);
     setOrdered(newOrdered);
-    
+
     // Remove from groups object
     const newGroups = { ...groups };
     delete newGroups[groupTitle];
     setGroups(newGroups);
-    
+
     // Show success toast
     if (emailCount > 0) {
       toast.success(`Group "${groupTitle}" and ${emailCount} email${emailCount === 1 ? '' : 's'} deleted`);
@@ -228,59 +229,67 @@ const Board: React.FC<BoardProps> = ({
   };
 
   return (
-    <div className="min-h-screen w-full p-4">
+    <>
+      <div className="flex justify-end mb-2 gap-2">
+        <Link href="/all">
+          <Button variant="outline" size="sm">
+            All Emails
+          </Button>
+        </Link>
+        <Button variant="outline" size="sm" onClick={() => AddGroup()}>
+          Add Group
+        </Button>
+      </div>
+      <div className="min-h-screen w-full border">
+        {/* Sortable Column Headers */}
+        <SortableTableHeader
+          sortField={sortField}
+          sortOrder={sortOrder}
+          onSort={handleSort}
+        />
 
-      <Button variant="outline" size="sm" onClick={() => AddGroup()}> 
-        Add Group
-      </Button>
-      {/* Sortable Column Headers */}
-      <SortableTableHeader
-        sortField={sortField}
-        sortOrder={sortOrder}
-        onSort={handleSort}
-      />
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable
+            droppableId="board"
+            type="GROUP"
+            direction="vertical"
+            isDropDisabled={false}
+            ignoreContainerClipping={Boolean(containerHeight)}
+            isCombineEnabled={false}
+          >
+            {(provided) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                className="min-h-screen min-w-full flex flex-col items-start"
+                style={{ height: containerHeight }}
+              >
+                {ordered.map((key, index) => (
+                  <Group
+                    key={key}
+                    index={index}
+                    title={key}
+                    emails={groups[key]}
+                    isScrollable={withScrollableColumns}
+                    onEmailClick={handleEmailClick}
+                    deleteGroup={() => deleteGroup(key)}
+                    renameGroup={renameGroup}
+                  />
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable
-          droppableId="board"
-          type="GROUP"
-          direction="vertical"
-          isDropDisabled={false}
-          ignoreContainerClipping={Boolean(containerHeight)}
-          isCombineEnabled={false}
-        >
-          {(provided) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              className="min-h-screen min-w-full flex flex-col items-start"
-              style={{ height: containerHeight }}
-            >
-              {ordered.map((key, index) => (
-                <Group
-                  key={key}
-                  index={index}
-                  title={key}
-                  emails={groups[key]}
-                  isScrollable={withScrollableColumns}
-                  onEmailClick={handleEmailClick}
-                  deleteGroup={() => deleteGroup(key)}
-                  renameGroup={renameGroup}
-                />
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-
-      {/* Email Sheet */}
-      <EmailSheet
-        email={selectedEmail}
-        isOpen={isSheetOpen}
-        onClose={handleSheetClose}
-      />
-    </div>
+        {/* Email Sheet */}
+        <EmailSheet
+          email={selectedEmail}
+          isOpen={isSheetOpen}
+          onClose={handleSheetClose}
+        />
+      </div>
+    </>
   );
 };
 

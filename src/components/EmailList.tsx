@@ -2,7 +2,7 @@ import React from "react";
 import { Droppable, Draggable, DroppableProvided } from "@hello-pangea/dnd";
 import { Email } from "@/lib/types";
 import EmailItem from "./EmailItem";
-import { Move } from "lucide-react";
+import { Move, Trash } from "lucide-react";
 import { Button } from "./ui/button";
 interface EmailListProps {
   listId: string;
@@ -17,12 +17,12 @@ interface EmailListProps {
 
 const getBackgroundColor = (isDraggingOver: boolean, isDraggingFrom: boolean): string => {
   if (isDraggingOver) {
-    return '#FFEBE6'; // Light orange when dragging over
+    return 'bg-muted'; // Light orange when dragging over
   }
   if (isDraggingFrom) {
-    return '#E6FCFF'; // Light cyan when dragging from
+    return 'bg-muted'; // Light cyan when dragging from
   }
-  return '#EBECF0'; // Default background (equivalent to bg-slate-100)
+  return 'bg-muted'; // Default background 
 };
 
 const InnerEmailList = React.memo<{ emails: Email[]; onEmailClick?: (email: Email) => void }>(function InnerEmailList({ emails, onEmailClick }) {
@@ -57,14 +57,15 @@ function InnerList({ emails, dropProvided, onEmailClick, deleteGroup }: InnerLis
   console.log(emails)
   if (emails.length === 0) {
     return (
-      <div ref={dropProvided.innerRef} className="flex flex-col gap-4 items-center justify-center p-8 text-muted-foreground">
+      <div ref={dropProvided.innerRef} className="flex flex-col gap-4 items-center justify-center p-8 text-muted-foreground bg-muted/30">
         <div className="flex items-center justify-center gap-1">
           <Move className="w-4 h-4 mr-2" />
           <p className="text-sm italic">
             Drag emails into this group
           </p>
         </div>
-        <Button variant="destructive" size="sm" onClick={() => deleteGroup()}> 
+        <Button variant="ghost" size="sm" onClick={() => deleteGroup()}> 
+          <Trash className="w-4 h-4 mr-1" />
           Delete Group
         </Button>
       </div>
