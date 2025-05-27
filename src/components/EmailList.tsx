@@ -8,8 +8,6 @@ interface EmailListProps {
   listType: string;
   emails: Email[];
   internalScroll?: boolean;
-  isCombineEnabled?: boolean;
-  useClone?: boolean;
   isDropDisabled?: boolean;
   style?: React.CSSProperties;
   onEmailClick?: (email: Email) => void;
@@ -73,8 +71,6 @@ const EmailList: React.FC<EmailListProps> = ({
   listType,
   emails,
   internalScroll = false,
-  isCombineEnabled = false,
-  useClone = false,
   isDropDisabled = false,
   style,
   onEmailClick,
@@ -85,20 +81,7 @@ const EmailList: React.FC<EmailListProps> = ({
       type={listType}
       direction="vertical"
       isDropDisabled={isDropDisabled}
-      isCombineEnabled={isCombineEnabled}
       ignoreContainerClipping={true}
-      renderClone={
-        useClone
-          ? (provided, snapshot, descriptor) => (
-              <EmailItem
-                email={emails[descriptor.source.index]}
-                provided={provided}
-                isDragging={snapshot.isDragging}
-                isClone
-              />
-            )
-          : undefined
-      }
     >
       {(dropProvided, dropSnapshot) => (
         <div

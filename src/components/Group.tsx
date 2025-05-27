@@ -64,8 +64,6 @@ const Group: React.FC<GroupProps> = ({
                 listType="EMAIL"
                 emails={emails}
                 internalScroll={isScrollable}
-                isCombineEnabled={false}
-                useClone={false}
                 onEmailClick={onEmailClick}
                 style={{
                   backgroundColor: snapshot.isDragging ? "#f0fdf4" : undefined, // green-50

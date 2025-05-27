@@ -9,6 +9,7 @@ import { reorder, reorderQuoteMap } from "@/lib/reorder";
 import { sortDataMap, SortField, SortOrder } from "@/lib/utils";
 import { Email } from "@/lib/types";
 import { EmailSheet } from "@/components/email-sheet";
+import SortableTableHeader from "./SortableTableHeader";
 import Group from "./Group";
 
 const DragDropContext = dynamic(
@@ -138,56 +139,14 @@ const Board: React.FC<BoardProps> = ({
     setGroups(data.quoteMap);
   };
 
-  const getSortIcon = (field: SortField) => {
-    if (sortField !== field) {
-      return "↕️"; // Neutral sort icon
-    }
-    return sortOrder === 'asc' ? "↑" : "↓";
-  };
-
   return (
     <div className="min-h-screen w-full p-4">
       {/* Sortable Column Headers */}
-      <div className="flex flex-col items-start mb-4">
-        <div className="w-full bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
-          <div className="flex">
-            <button
-              onClick={() => handleSort('createdAt')}
-              className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors w-[140px] ${
-                sortField === 'createdAt' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
-              }`}
-            >
-              <span className="flex items-center justify-between">
-                Date Created
-                <span className="ml-2">{getSortIcon('createdAt')}</span>
-              </span>
-            </button>
-            <button
-              onClick={() => handleSort('title')}
-              className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${
-                sortField === 'title' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
-              }`}
-              style={{ width: 'calc(100% - 240px)' }}
-            >
-              <span className="flex items-center justify-between">
-                Title
-                <span className="ml-2">{getSortIcon('title')}</span>
-              </span>
-            </button>
-            <button
-              onClick={() => handleSort('status')}
-              className={`w-40 px-4 py-3 text-left font-medium hover:bg-slate-50 transition-colors ${
-                sortField === 'status' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
-              }`}
-            >
-              <span className="flex items-center justify-between">
-                Status
-                <span className="ml-2">{getSortIcon('status')}</span>
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
+      <SortableTableHeader
+        sortField={sortField}
+        sortOrder={sortOrder}
+        onSort={handleSort}
+      />
 
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable
