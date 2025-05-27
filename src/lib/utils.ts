@@ -35,7 +35,7 @@ export function formatRelativeTime(dateString: string): string {
   }
 }
 
-export type SortField = 'title' | 'status' | 'createdAt' | 'audience' | 'updatedAt'
+export type SortField = 'name' | 'status' | 'createdAt' | 'audience' | 'updatedAt'
 export type SortOrder = 'asc' | 'desc'
 
 export function sortEmails(emails: Email[], field: SortField, order: SortOrder): Email[] {

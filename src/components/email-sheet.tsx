@@ -39,7 +39,7 @@ export function EmailSheet({ email, isOpen, onClose }: EmailSheetProps) {
               Title
             </h3>
             <p className="text-base text-slate-900 leading-relaxed">
-              {email.title}
+              {email.name}
             </p>
           </div>
 

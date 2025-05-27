@@ -1,12 +1,22 @@
 export interface Email {
   id: string;
   group: string;
-  title: string;
+  name: string;
+  subject: string; // this is the title, [group] title
   summary: string;
   status: string;
   createdAt: string;
   updatedAt: string;
   audience: string;
+
+  openRate: number;
+  clickRate: number;
+  sentDate: string;
+  sentTime: string;
+  sent: number;
+  isRecommended?: boolean;
+  scheduledFor?: string;
+  visibility: 'public' | 'private' | 'draft';
   //type: string;
 }
 

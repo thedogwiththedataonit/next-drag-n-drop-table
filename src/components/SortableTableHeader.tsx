@@ -35,15 +35,15 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
             </span>
           </button>
           <button
-            onClick={() => onSort('title')}
+            onClick={() => onSort('name')}
             className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${
-              sortField === 'title' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
+              sortField === 'name' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
             }`}
             style={{ width: 'calc(100% - 240px)' }}
           >
             <span className="flex items-center justify-between">
               Title
-              <span className="ml-2">{getSortIcon('title')}</span>
+              <span className="ml-2">{getSortIcon('name')}</span>
             </span>
           </button>
           <button

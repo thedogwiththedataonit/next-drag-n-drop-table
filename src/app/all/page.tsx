@@ -1,6 +1,6 @@
 import AllEmailsTable from "@/components/AllEmailsTable";
 import { SortField, SortOrder } from "@/lib/utils";
-import { demoData } from "@/lib/mockData";
+import { defaultBoardData } from "@/lib/mockData";
 import Link from "next/link";
 
 interface PageProps {
@@ -38,7 +38,7 @@ export default async function Home({ searchParams }: PageProps) {
 
       {/* All Emails Table */}
       <AllEmailsTable 
-        initial={demoData} 
+        initial={defaultBoardData} 
         initialSortField={sortField}
         initialSortOrder={sortOrder}
       />

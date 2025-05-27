@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import dynamic from 'next/dynamic';
 import { DropResult } from "@hello-pangea/dnd";
 import { useQueryState } from "nuqs";
+import { toast } from "sonner";
 import { BoardProps } from "@/lib/types";
 import { reorder, reorderQuoteMap } from "@/lib/reorder";
 import { sortDataMap, SortField, SortOrder } from "@/lib/utils";
@@ -82,12 +83,15 @@ const Board: React.FC<BoardProps> = ({
     if (result.combine) {
       if (result.type === "GROUP") {
         const shallow = [...ordered];
+        const removedGroup = ordered[result.source.index];
         shallow.splice(result.source.index, 1);
         setOrdered(shallow);
+        toast.success(`Group "${removedGroup}" combined and removed`);
         return;
       }
 
       const group = groups[result.source.droppableId];
+      const removedEmail = group[result.source.index];
       const withQuoteRemoved = [...group];
       withQuoteRemoved.splice(result.source.index, 1);
 
@@ -96,6 +100,7 @@ const Board: React.FC<BoardProps> = ({
         [result.source.droppableId]: withQuoteRemoved,
       };
       setGroups(orderedGroups);
+      toast.success(`Email "${removedEmail.name}" combined and removed from "${result.source.droppableId}"`);
       return;
     }
 
@@ -117,12 +122,22 @@ const Board: React.FC<BoardProps> = ({
 
     // Reordering columns
     if (result.type === "GROUP") {
+      const groupName = ordered[source.index];
       const reorderedOrder = reorder(ordered, source.index, destination.index);
       setOrdered(reorderedOrder);
+      
+      // Determine direction and show appropriate toast
+      const direction = destination.index > source.index ? "down" : "up";
+      const positions = destination.index > source.index 
+        ? `position ${source.index + 1} to ${destination.index + 1}`
+        : `position ${source.index + 1} to ${destination.index + 1}`;
+      
+      toast.success(`Group "${groupName}" moved ${direction} from ${positions}`);
       return;
     }
 
     // Reordering quotes within/between columns
+    const movedEmail = groups[source.droppableId][source.index];
     const data = reorderQuoteMap({
       quoteMap: groups,
       source,
@@ -130,6 +145,20 @@ const Board: React.FC<BoardProps> = ({
     });
 
     setGroups(data.quoteMap);
+
+    // Show appropriate toast message based on move type
+    if (source.droppableId === destination.droppableId) {
+      // Moving within the same list
+      const direction = destination.index > source.index ? "down" : "up";
+      const positions = destination.index > source.index 
+        ? `position ${source.index + 1} to ${destination.index + 1}`
+        : `position ${source.index + 1} to ${destination.index + 1}`;
+      
+      toast.success(`Email "${movedEmail.name}" moved ${direction} within "${source.droppableId}" from ${positions}`);
+    } else {
+      // Moving between different lists
+      toast.success(`Email "${movedEmail.name}" moved from "${source.droppableId}" to "${destination.droppableId}"`);
+    }
   };
 
   return (

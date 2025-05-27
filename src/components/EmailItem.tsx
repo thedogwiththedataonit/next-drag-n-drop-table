@@ -87,7 +87,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
       >
         <div className="flex flex-col">
           <div className="text-sm leading-relaxed">
-            {email.title}
+            {email.name}
           </div>
         </div>
       </td>
