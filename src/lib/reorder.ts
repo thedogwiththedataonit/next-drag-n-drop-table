@@ -1,4 +1,4 @@
-import { QuoteMap } from "./types";
+import { DataMap } from "./types";
 
 // A helper function for reordering lists
 export const reorder = <T>(list: T[], startIndex: number, endIndex: number): T[] => {
@@ -9,7 +9,7 @@ export const reorder = <T>(list: T[], startIndex: number, endIndex: number): T[]
 };
 
 export interface ReorderQuoteMapParams {
-  quoteMap: QuoteMap;
+  quoteMap: DataMap;
   source: {
     droppableId: string;
     index: number;
