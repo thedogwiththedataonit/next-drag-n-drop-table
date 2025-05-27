@@ -1,7 +1,6 @@
 import React from "react";
-import { DraggableProvided, DraggableStateSnapshot } from "react-beautiful-dnd";
+import { DraggableProvided } from "react-beautiful-dnd";
 import { Email } from "@/lib/types";
-import Image from "next/image";
 import { formatRelativeTime } from "@/lib/utils";
 
 interface EmailItemProps {
@@ -41,7 +40,6 @@ const EmailItem: React.FC<EmailItemProps> = ({
   isGroupedOver = false,
   provided,
   style,
-  isClone = false,
   index,
 }) => {
   const backgroundStyle = getBackgroundColor(isDragging, isGroupedOver);

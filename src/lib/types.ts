@@ -16,6 +16,8 @@ export interface BoardProps {
   isCombineEnabled?: boolean;
   useClone?: boolean;
   containerHeight?: string;
+  initialSortField?: string;
+  initialSortOrder?: string;
 }
 
 export interface GroupProps {

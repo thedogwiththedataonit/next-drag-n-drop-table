@@ -1,5 +1,5 @@
 import React from "react";
-import { Droppable, Draggable } from "react-beautiful-dnd";
+import { Droppable, Draggable, DroppableProvided } from "react-beautiful-dnd";
 import { Email } from "@/lib/types";
 import EmailItem from "./EmailItem";
 
@@ -48,7 +48,7 @@ const InnerQuoteList = React.memo<{ emails: Email[] }>(function InnerQuoteList({
 interface InnerListProps {
   emails: Email[];
   title?: string;
-  dropProvided: any;
+  dropProvided: DroppableProvided;
 }
 
 function InnerList({ emails, title, dropProvided }: InnerListProps) {

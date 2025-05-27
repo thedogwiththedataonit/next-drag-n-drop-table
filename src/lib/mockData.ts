@@ -29,4 +29,4 @@ export const createMockData = (totalEmails: number, groupNames: string[]): DataM
   return data;
 };
 
-export const defaultBoardData = createMockData(10, ["Jake", "BMO", "Finn"]);
+export const defaultBoardData = createMockData(5, ["Jake", "BMO", "Finn"]);

@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { Email, DataMap } from "./types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -32,4 +33,39 @@ export function formatRelativeTime(dateString: string): string {
   } else {
     return diffInYears === 1 ? "1 year ago" : `${diffInYears} years ago`;
   }
+}
+
+export type SortField = 'title' | 'status' | 'createdAt'
+export type SortOrder = 'asc' | 'desc'
+
+export function sortEmails(emails: Email[], field: SortField, order: SortOrder): Email[] {
+  return [...emails].sort((a, b) => {
+    let aValue: string | Date = a[field]
+    let bValue: string | Date = b[field]
+    
+    // Handle date sorting
+    if (field === 'createdAt') {
+      aValue = new Date(a[field])
+      bValue = new Date(b[field])
+    }
+    
+    let comparison = 0
+    if (aValue < bValue) {
+      comparison = -1
+    } else if (aValue > bValue) {
+      comparison = 1
+    }
+    
+    return order === 'desc' ? -comparison : comparison
+  })
+}
+
+export function sortDataMap(dataMap: DataMap, field: SortField, order: SortOrder): DataMap {
+  const sortedDataMap: DataMap = {}
+  
+  for (const [groupKey, emails] of Object.entries(dataMap)) {
+    sortedDataMap[groupKey] = sortEmails(emails, field, order)
+  }
+  
+  return sortedDataMap
 }
