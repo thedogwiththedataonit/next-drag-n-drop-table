@@ -35,18 +35,24 @@ export function formatRelativeTime(dateString: string): string {
   }
 }
 
-export type SortField = 'name' | 'status' | 'createdAt' | 'audience' | 'updatedAt'
+export type SortField = 'name' | 'status' | 'createdAt' | 'audience' | 'updatedAt' | 'openRate' | 'clickRate' | 'sent'
 export type SortOrder = 'asc' | 'desc'
 
 export function sortEmails(emails: Email[], field: SortField, order: SortOrder): Email[] {
   return [...emails].sort((a, b) => {
-    let aValue: string | Date = a[field]
-    let bValue: string | Date = b[field]
+    let aValue: string | Date | number = a[field]
+    let bValue: string | Date | number = b[field]
     
     // Handle date sorting
     if (field === 'createdAt') {
       aValue = new Date(a[field])
       bValue = new Date(b[field])
+    }
+
+    // Handle number sorting
+    if (field === 'openRate' || field === 'clickRate' || field === 'sent') {
+      aValue = parseFloat(a[field].toString())
+      bValue = parseFloat(b[field].toString())
     }
     
     let comparison = 0
@@ -58,6 +64,19 @@ export function sortEmails(emails: Email[], field: SortField, order: SortOrder):
     
     return order === 'desc' ? -comparison : comparison
   })
+}
+
+export function tableColumnWidths(): Record<SortField, string> {
+  return {
+    name: 'w-[140px]',
+    status: "w-[140px]",
+    createdAt: "w-[140px]",
+    audience: "w-[140px]",
+    updatedAt: "w-[140px]",
+    openRate: "w-[140px]",
+    clickRate: "w-[140px]",
+    sent: "w-[140px]",
+  }
 }
 
 export function sortDataMap(dataMap: DataMap, field: SortField, order: SortOrder): DataMap {

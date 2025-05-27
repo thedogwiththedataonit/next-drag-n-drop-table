@@ -1,7 +1,7 @@
 import React from "react";
 import { DraggableProvided } from "@hello-pangea/dnd";
 import { Email } from "@/lib/types";
-import { formatRelativeTime } from "@/lib/utils";
+import { formatRelativeTime, tableColumnWidths } from "@/lib/utils";
 
 interface EmailItemProps {
   email: Email;
@@ -64,7 +64,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
         bg-white hover:bg-slate-100 transition-colors cursor-pointer
         ${isGroupedOver ? 'bg-slate-100' : ''}
         border-2
-        flex flex-row justify-between items-center
+        flex flex-row justify-start items-center
         ${isDragging ? "shadow-lg shadow-slate-300" : "shadow-none"}
       `}
       data-is-dragging={isDragging}
@@ -73,7 +73,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
     >
       {/* Avatar Cell */}
       <td 
-        className=" p-4 align-top whitespace-nowrap w-[140px]"
+        className={tableColumnWidths().createdAt}
       >
         {
           formatRelativeTime(email.createdAt)
@@ -82,8 +82,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
       
       {/* Content Cell */}
       <td 
-        className="p-4  text-slate-900"
-        style={{ width: 'calc(100% - 240px)' }}
+        className={tableColumnWidths().name}
       >
         <div className="flex flex-col">
           <div className="text-sm leading-relaxed">
@@ -94,7 +93,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Audience Cell */}
       <td 
-        className="w-40 p-4"
+        className={tableColumnWidths().audience}
       >
         {
           email.audience
@@ -103,16 +102,43 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Updated At Cell */}
       <td 
-        className="w-40 p-4"
+        className={tableColumnWidths().updatedAt}
       >
         {
-          email.updatedAt
+          formatRelativeTime(email.updatedAt)
+        }
+      </td>
+
+      {/* Sent Cell */}
+      <td 
+        className={tableColumnWidths().sent}
+      >
+        {
+          email.sent
+        }
+      </td>
+
+      {/* Open Rate Cell */}
+      <td 
+        className={tableColumnWidths().openRate}
+      >
+        {
+          email.openRate
+        }
+      </td>
+
+      {/* Click Rate Cell */}
+      <td 
+        className={tableColumnWidths().clickRate}
+      >
+        {
+          email.clickRate
         }
       </td>
 
       {/* Author Cell */}
       <td 
-        className="w-40 p-4"
+        className={tableColumnWidths().status}
       >
         {
           email.status
