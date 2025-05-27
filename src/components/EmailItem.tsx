@@ -71,18 +71,10 @@ const EmailItem: React.FC<EmailItemProps> = ({
       data-testid={email.id}
       data-index={index}
     >
-      {/* Avatar Cell */}
-      <td 
-        className={tableColumnWidths().createdAt}
-      >
-        {
-          formatRelativeTime(email.createdAt)
-        }
-      </td>
       
-      {/* Content Cell */}
+      {/* Name Cell */}
       <td 
-        className={tableColumnWidths().name}
+        className={`p-4 flex-1`}
       >
         <div className="flex flex-col">
           <div className="text-sm leading-relaxed">
@@ -93,7 +85,8 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Audience Cell */}
       <td 
-        className={tableColumnWidths().audience}
+        className={`p-4`}
+        style={{ width: tableColumnWidths().audience }}
       >
         {
           email.audience
@@ -102,7 +95,8 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Updated At Cell */}
       <td 
-        className={tableColumnWidths().updatedAt}
+        className={`p-4`}
+        style={{ width: tableColumnWidths().updatedAt }}
       >
         {
           formatRelativeTime(email.updatedAt)
@@ -111,7 +105,8 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Sent Cell */}
       <td 
-        className={tableColumnWidths().sent}
+        className={`p-4`}
+        style={{ width: tableColumnWidths().sent }}
       >
         {
           email.sent
@@ -120,7 +115,8 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Open Rate Cell */}
       <td 
-        className={tableColumnWidths().openRate}
+        className={`p-4`}
+        style={{ width: tableColumnWidths().openRate }}
       >
         {
           email.openRate
@@ -129,7 +125,8 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Click Rate Cell */}
       <td 
-        className={tableColumnWidths().clickRate}
+        className={`p-4`}
+        style={{ width: tableColumnWidths().clickRate }}
       >
         {
           email.clickRate
@@ -138,7 +135,8 @@ const EmailItem: React.FC<EmailItemProps> = ({
 
       {/* Author Cell */}
       <td 
-        className={tableColumnWidths().status}
+        className={`p-4`}
+        style={{ width: tableColumnWidths().status }}
       >
         {
           email.status

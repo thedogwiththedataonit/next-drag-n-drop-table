@@ -23,20 +23,10 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
     <div className="flex flex-col items-start mb-4">
       <div className="w-full bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden text-sm">
         <div className="flex">
-          <button
-            onClick={() => onSort('createdAt')}
-            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${tableColumnWidths().createdAt} ${
-              sortField === 'createdAt' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
-            }`}
-          >
-            <span className="flex items-center justify-between">
-              Date Created
-              <span className="ml-2">{getSortIcon('createdAt')}</span>
-            </span>
-          </button>
+
           <button
             onClick={() => onSort('name')}
-            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${tableColumnWidths().name} ${
+            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors flex-1 ${
               sortField === 'name' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
             }`}
           > 
@@ -47,7 +37,8 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
           </button>
           <button
             onClick={() => onSort('audience')}
-            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${tableColumnWidths().audience} ${
+            style={{ width: tableColumnWidths().audience }}
+            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${
               sortField === 'audience' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
             }`}
           >
@@ -59,7 +50,8 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
            
           <button
             onClick={() => onSort('updatedAt')}
-            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${tableColumnWidths().updatedAt} ${
+            style={{ width: tableColumnWidths().updatedAt }}
+            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${
               sortField === 'updatedAt' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
             }`}
           >
@@ -71,7 +63,8 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
 
           <button
             onClick={() => onSort('sent')}
-            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${tableColumnWidths().sent} ${
+            style={{ width: tableColumnWidths().sent }}
+            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${
               sortField === 'sent' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
             }`}
           >
@@ -83,7 +76,8 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
 
           <button
             onClick={() => onSort('openRate')}
-            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${tableColumnWidths().openRate} ${
+            style={{ width: tableColumnWidths().openRate }}
+            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${
               sortField === 'openRate' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
             }`}
           >
@@ -95,7 +89,8 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
 
           <button
             onClick={() => onSort('clickRate')}
-            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${tableColumnWidths().clickRate} ${
+            style={{ width: tableColumnWidths().clickRate }}
+            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${
               sortField === 'clickRate' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
             }`}
           >
@@ -107,7 +102,8 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
 
           <button
             onClick={() => onSort('status')}
-            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${tableColumnWidths().status} ${
+            style={{ width: tableColumnWidths().status }}
+            className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${
               sortField === 'status' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
             }`}
           >

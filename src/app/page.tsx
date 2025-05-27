@@ -25,7 +25,7 @@ export default async function Home({ searchParams }: PageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center items-center py-6">
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-slate-900">
+              <h1 className="text-3xl font-bold">
                 Next.js DnD Board
               </h1>
               <Link href="/all">

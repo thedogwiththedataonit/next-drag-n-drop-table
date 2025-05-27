@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Draggable } from "@hello-pangea/dnd";
+import { ChevronDown } from "lucide-react";
 import { GroupProps } from "@/lib/types";
 import EmailList from "./EmailList";
+import { tableColumnWidths } from "@/lib/utils";
 
 const Group: React.FC<GroupProps> = ({
   title,
@@ -15,7 +17,27 @@ const Group: React.FC<GroupProps> = ({
   const handleToggle = () => {
     setIsExpanded(!isExpanded);
   };
-  
+
+  // Calculate metrics for the group
+  const groupMetrics = useMemo(() => {
+    if (emails.length === 0) {
+      return {
+        totalSent: 0,
+        avgOpenRate: 0,
+        avgClickRate: 0
+      };
+    }
+
+    const totalSent = emails.reduce((sum, email) => sum + email.sent, 0);
+    const avgOpenRate = emails.reduce((sum, email) => sum + email.openRate, 0) / emails.length;
+    const avgClickRate = emails.reduce((sum, email) => sum + email.clickRate, 0) / emails.length;
+
+    return {
+      totalSent,
+      avgOpenRate,
+      avgClickRate
+    };
+  }, [emails]);
 
   return (
     <Draggable draggableId={title} index={index}>
@@ -30,32 +52,57 @@ const Group: React.FC<GroupProps> = ({
             onClick={handleToggle}
             {...provided.dragHandleProps}
             className={`
-              flex items-center justify-center
-              rounded-sm px-6 py-4
+              flex items-center justify-start w-full
+              rounded-sm
               transition-colors duration-200 ease-in-out
               cursor-grab active:cursor-grabbing
-              ${
-                snapshot.isDragging
-                  ? "bg-emerald-100 text-emerald-800"
-                  : "bg-slate-300 text-slate-700 hover:bg-emerald-100 hover:text-emerald-800"
+              ${snapshot.isDragging
+                ? "bg-emerald-100 text-emerald-800"
+                : "bg-slate-300 text-slate-700 hover:bg-emerald-100 hover:text-emerald-800"
               }
             `}
             aria-label={`${title} quote list`}
           >
-            <h2 className="font-semibold text-lg select-none">{title}</h2>
+            <div className="flex-1 p-4">
+              <div className="flex items-center gap-2">
+
+                <h2 className="font-semibold text-lg select-none">{title}</h2>
+                <ChevronDown
+                  className={`h-5 w-5 transition-transform duration-200 ease-in-out ${isExpanded ? 'rotate-0' : 'rotate-180'
+                    }`}
+                />
+              </div>
+            </div>
+            <div className="h-full p-4" style={{ width: tableColumnWidths().audience }}>test</div>
+            <div className="h-full p-4" style={{ width: tableColumnWidths().updatedAt }}>test</div>
+            <div className="h-full p-4" style={{ width: tableColumnWidths().sent }}>
+              <span className="text-sm font-medium">
+                {groupMetrics.totalSent.toLocaleString()}
+              </span>
+            </div>
+            <div className="h-full p-4" style={{ width: tableColumnWidths().openRate }}>
+              <span className="text-sm font-medium">
+                {groupMetrics.avgOpenRate.toFixed(1)}%
+              </span>
+            </div>
+            <div className="h-full p-4" style={{ width: tableColumnWidths().clickRate }}>
+              <span className="text-sm font-medium">
+                {groupMetrics.avgClickRate.toFixed(1)}%
+              </span>
+            </div>
+            <div className="h-full p-4" style={{ width: tableColumnWidths().status }}>test</div>
           </div>
 
           {/* Table Container */}
-          <div 
+          <div
             className={`
               w-full overflow-hidden rounded-b-lg
               ${snapshot.isDragging ? "bg-emerald-50" : "bg-white"}
               shadow-md 
               transition-all duration-300 ease-in-out
-              ${
-                isExpanded 
-                  ? "opacity-100 max-h-[800px]" 
-                  : "opacity-0 max-h-0 shadow-none"
+              ${isExpanded
+                ? "opacity-100 max-h-[800px]"
+                : "opacity-0 max-h-0 shadow-none"
               }
             `}
           >
