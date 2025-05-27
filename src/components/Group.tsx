@@ -8,6 +8,7 @@ const Group: React.FC<GroupProps> = ({
   emails,
   index,
   isScrollable = false,
+  onEmailClick,
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -65,6 +66,7 @@ const Group: React.FC<GroupProps> = ({
                 internalScroll={isScrollable}
                 isCombineEnabled={false}
                 useClone={false}
+                onEmailClick={onEmailClick}
                 style={{
                   backgroundColor: snapshot.isDragging ? "#f0fdf4" : undefined, // green-50
                 }}

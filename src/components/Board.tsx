@@ -1,14 +1,36 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { DragDropContext, Droppable, DropResult, resetServerContext } from "react-beautiful-dnd";
+import dynamic from 'next/dynamic';
+import { DropResult } from "react-beautiful-dnd";
 import { useQueryState } from "nuqs";
 import { BoardProps } from "@/lib/types";
 import { reorder, reorderQuoteMap } from "@/lib/reorder";
 import { sortDataMap, SortField, SortOrder } from "@/lib/utils";
+import { Email } from "@/lib/types";
+import { EmailSheet } from "@/components/email-sheet";
 import Group from "./Group";
 
-resetServerContext();
+const DragDropContext = dynamic(
+  () => import('react-beautiful-dnd').then(mod => {
+    return mod.DragDropContext;
+  }),
+  {ssr: false},
+);
+
+const Droppable = dynamic(
+  () => import('react-beautiful-dnd').then(mod => {
+    return mod.Droppable;
+  }),
+  {ssr: false},
+);
+
+const Draggable = dynamic(
+  () => import('react-beautiful-dnd').then(mod => {
+    return mod.Draggable;
+  }),
+  {ssr: false},
+);
 
 const Board: React.FC<BoardProps> = ({
   initial,
@@ -19,6 +41,10 @@ const Board: React.FC<BoardProps> = ({
 }) => {
   const [groups, setGroups] = useState(initial);
   const [ordered, setOrdered] = useState(Object.keys(initial));
+  
+  // Email sheet state
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   
   // Use nuqs for URL state management
   const [sortField, setSortField] = useQueryState('sortBy', { 
@@ -45,6 +71,16 @@ const Board: React.FC<BoardProps> = ({
       setSortField(field);
       setSortOrder('desc');
     }
+  };
+
+  const handleEmailClick = (email: Email) => {
+    setSelectedEmail(email);
+    setIsSheetOpen(true);
+  };
+
+  const handleSheetClose = () => {
+    setIsSheetOpen(false);
+    setSelectedEmail(null);
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -117,7 +153,7 @@ const Board: React.FC<BoardProps> = ({
           <div className="flex">
             <button
               onClick={() => handleSort('createdAt')}
-              className={`flex-1 px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${
+              className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors w-[140px] ${
                 sortField === 'createdAt' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
               }`}
             >
@@ -128,9 +164,10 @@ const Board: React.FC<BoardProps> = ({
             </button>
             <button
               onClick={() => handleSort('title')}
-              className={`flex-1 px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${
+              className={`px-4 py-3 text-left font-medium border-r border-slate-200 hover:bg-slate-50 transition-colors ${
                 sortField === 'title' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
               }`}
+              style={{ width: 'calc(100% - 240px)' }}
             >
               <span className="flex items-center justify-between">
                 Title
@@ -139,7 +176,7 @@ const Board: React.FC<BoardProps> = ({
             </button>
             <button
               onClick={() => handleSort('status')}
-              className={`flex-1 px-4 py-3 text-left font-medium hover:bg-slate-50 transition-colors ${
+              className={`w-40 px-4 py-3 text-left font-medium hover:bg-slate-50 transition-colors ${
                 sortField === 'status' ? 'bg-blue-50 text-blue-700' : 'text-slate-700'
               }`}
             >
@@ -175,6 +212,7 @@ const Board: React.FC<BoardProps> = ({
                   title={key}
                   emails={groups[key]}
                   isScrollable={withScrollableColumns}
+                  onEmailClick={handleEmailClick}
                 />
               ))}
               {provided.placeholder}
@@ -182,6 +220,13 @@ const Board: React.FC<BoardProps> = ({
           )}
         </Droppable>
       </DragDropContext>
+
+      {/* Email Sheet */}
+      <EmailSheet
+        email={selectedEmail}
+        isOpen={isSheetOpen}
+        onClose={handleSheetClose}
+      />
     </div>
   );
 };

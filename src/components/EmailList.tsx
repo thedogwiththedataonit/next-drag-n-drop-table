@@ -7,12 +7,12 @@ interface EmailListProps {
   listId: string;
   listType: string;
   emails: Email[];
-  title?: string;
   internalScroll?: boolean;
   isCombineEnabled?: boolean;
   useClone?: boolean;
   isDropDisabled?: boolean;
   style?: React.CSSProperties;
+  onEmailClick?: (email: Email) => void;
 }
 
 const getBackgroundColor = (isDraggingOver: boolean, isDraggingFrom: boolean): string => {
@@ -25,11 +25,11 @@ const getBackgroundColor = (isDraggingOver: boolean, isDraggingFrom: boolean): s
   return '#EBECF0'; // Default background (equivalent to bg-slate-100)
 };
 
-const InnerQuoteList = React.memo<{ emails: Email[] }>(function InnerQuoteList({ emails }) {
+const InnerEmailList = React.memo<{ emails: Email[]; onEmailClick?: (email: Email) => void }>(function InnerEmailList({ emails, onEmailClick }) {
   return (
     <>
       {emails.map((email, index) => (
-        <Draggable key={email.id} draggableId={email.id} index={index}>
+        <Draggable key={email.id} draggableId={email.id} index={index }>
           {(dragProvided, dragSnapshot) => (
             <EmailItem
               key={email.id}
@@ -37,6 +37,7 @@ const InnerQuoteList = React.memo<{ emails: Email[] }>(function InnerQuoteList({
               isDragging={dragSnapshot.isDragging}
               isGroupedOver={Boolean(dragSnapshot.combineTargetFor)}
               provided={dragProvided}
+              onEmailClick={onEmailClick}
             />
           )}
         </Draggable>
@@ -47,31 +48,20 @@ const InnerQuoteList = React.memo<{ emails: Email[] }>(function InnerQuoteList({
 
 interface InnerListProps {
   emails: Email[];
-  title?: string;
   dropProvided: DroppableProvided;
+  onEmailClick?: (email: Email) => void;
 }
 
-function InnerList({ emails, title, dropProvided }: InnerListProps) {
+function InnerList({ emails, dropProvided, onEmailClick }: InnerListProps) {
+  console.log(emails)
   return (
     <table className="w-full border-collapse table-fixed">
-      {title && (
-        <thead>
-          <tr>
-            <th 
-              colSpan={3} 
-              className="text-center p-0 font-normal text-slate-700 bg-slate-200"
-            >
-              {title}
-            </th>
-          </tr>
-        </thead>
-      )}
       <tbody 
         ref={dropProvided.innerRef} 
         className="min-h-full"
         style={{ paddingBottom: '8px' }}
       >
-        <InnerQuoteList emails={emails} />
+        <InnerEmailList emails={emails} onEmailClick={onEmailClick} />
         {dropProvided.placeholder}
       </tbody>
     </table>
@@ -82,12 +72,12 @@ const EmailList: React.FC<EmailListProps> = ({
   listId,
   listType,
   emails,
-  title,
   internalScroll = false,
   isCombineEnabled = false,
   useClone = false,
   isDropDisabled = false,
   style,
+  onEmailClick,
 }) => {
   return (
     <Droppable
@@ -132,10 +122,10 @@ const EmailList: React.FC<EmailListProps> = ({
             <div 
               className="overflow-x-hidden overflow-y-auto max-h-full"
             >
-              <InnerList emails={emails} title={title} dropProvided={dropProvided} />
+              <InnerList emails={emails} dropProvided={dropProvided} onEmailClick={onEmailClick} />
             </div>
           ) : (
-            <InnerList emails={emails} title={title} dropProvided={dropProvided} />
+            <InnerList emails={emails} dropProvided={dropProvided} onEmailClick={onEmailClick} />
           )}
         </div>
       )}

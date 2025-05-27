@@ -25,4 +25,5 @@ export interface GroupProps {
   emails: Email[];
   index: number;
   isScrollable?: boolean;
+  onEmailClick?: (email: Email) => void;
 } 

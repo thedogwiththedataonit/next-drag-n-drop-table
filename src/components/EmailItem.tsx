@@ -11,17 +11,8 @@ interface EmailItemProps {
   style?: React.CSSProperties;
   isClone?: boolean;
   index?: number;
+  onEmailClick?: (email: Email) => void;
 }
-
-const getBackgroundColor = (isDragging: boolean, isGroupedOver: boolean) => {
-  if (isGroupedOver) {
-    return { backgroundColor: "#f1f5f9" }; // slate-100
-  }
-  return { backgroundColor: "#ffffff" };
-};
-
-const getBorderColor = (isDragging: boolean) =>
-  isDragging ? { borderColor: "#059669" } : { borderColor: "transparent" };
 
 function getStyle(provided: DraggableProvided, style?: React.CSSProperties) {
   if (!style) {
@@ -34,6 +25,9 @@ function getStyle(provided: DraggableProvided, style?: React.CSSProperties) {
   };
 }
 
+const getBorderColor = (isDragging: boolean) =>
+  isDragging ? { borderColor: "#059669" } : { borderColor: "transparent" };
+
 const EmailItem: React.FC<EmailItemProps> = ({
   email,
   isDragging,
@@ -41,26 +35,37 @@ const EmailItem: React.FC<EmailItemProps> = ({
   provided,
   style,
   index,
+  onEmailClick,
 }) => {
-  const backgroundStyle = getBackgroundColor(isDragging, isGroupedOver);
   const borderStyle = getBorderColor(isDragging);
+
+  const handleClick = (e: React.MouseEvent) => {
+    // Don't trigger click while dragging
+    if (isDragging) return;
+    
+    // Prevent drag handle from triggering click
+    if (e.defaultPrevented) return;
+    
+    onEmailClick?.(email);
+  };
 
   return (
     <tr
       ref={provided.innerRef}
       {...provided.draggableProps}
       {...provided.dragHandleProps}
+      onClick={handleClick}
       style={{
         ...getStyle(provided, style),
-        ...backgroundStyle,
         ...borderStyle,
-        
+        cursor: isDragging ? 'grabbing' : 'pointer',
       }}
       className={`
+        bg-white hover:bg-slate-100 transition-colors cursor-pointer
+        ${isGroupedOver ? 'bg-slate-100' : ''}
         border-2
         flex flex-row justify-between items-center
         ${isDragging ? "shadow-lg shadow-slate-300" : "shadow-none"}
-        ${isDragging ? "" : ""}
       `}
       data-is-dragging={isDragging}
       data-testid={email.id}
