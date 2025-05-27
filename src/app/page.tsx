@@ -1,7 +1,6 @@
 import Board from "@/components/Board";
 import { sortDataMap, SortField, SortOrder } from "@/lib/utils";
 import { defaultBoardData } from "@/lib/mockData";
-import Link from "next/link";
 
 interface PageProps {
   searchParams: Promise<{
