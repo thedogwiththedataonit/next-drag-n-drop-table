@@ -13,6 +13,7 @@ interface EmailListProps {
   style?: React.CSSProperties;
   onEmailClick?: (email: Email) => void;
   deleteGroup: () => void;
+  disableDragging?: boolean;
 }
 
 const getBackgroundColor = (isDraggingOver: boolean, isDraggingFrom: boolean): string => {
@@ -25,11 +26,11 @@ const getBackgroundColor = (isDraggingOver: boolean, isDraggingFrom: boolean): s
   return 'bg-muted'; // Default background 
 };
 
-const InnerEmailList = React.memo<{ emails: Email[]; onEmailClick?: (email: Email) => void }>(function InnerEmailList({ emails, onEmailClick }) {
+const InnerEmailList = React.memo<{ emails: Email[]; onEmailClick?: (email: Email) => void; disableDragging?: boolean }>(function InnerEmailList({ emails, onEmailClick, disableDragging = false }) {
   return (
     <>
       {emails.map((email, index) => (
-        <Draggable key={email.id} draggableId={email.id} index={index }>
+        <Draggable key={email.id} draggableId={email.id} index={index} isDragDisabled={disableDragging}>
           {(dragProvided, dragSnapshot) => (
             <EmailItem
               key={email.id}
@@ -38,6 +39,7 @@ const InnerEmailList = React.memo<{ emails: Email[]; onEmailClick?: (email: Emai
               isGroupedOver={Boolean(dragSnapshot.combineTargetFor)}
               provided={dragProvided}
               onEmailClick={onEmailClick}
+              disableDragging={disableDragging}
             />
           )}
         </Draggable>
@@ -51,9 +53,10 @@ interface InnerListProps {
   dropProvided: DroppableProvided;
   onEmailClick?: (email: Email) => void;
   deleteGroup: () => void;
+  disableDragging?: boolean;
 }
 
-function InnerList({ emails, dropProvided, onEmailClick, deleteGroup }: InnerListProps) {
+function InnerList({ emails, dropProvided, onEmailClick, deleteGroup, disableDragging = false }: InnerListProps) {
   console.log(emails)
   if (emails.length === 0) {
     return (
@@ -78,7 +81,7 @@ function InnerList({ emails, dropProvided, onEmailClick, deleteGroup }: InnerLis
         className="min-h-full"
         style={{ paddingBottom: '8px' }}
       >
-        <InnerEmailList emails={emails} onEmailClick={onEmailClick} />
+        <InnerEmailList emails={emails} onEmailClick={onEmailClick} disableDragging={disableDragging} />
         {dropProvided.placeholder}
       </tbody>
     </table>
@@ -93,14 +96,15 @@ const EmailList: React.FC<EmailListProps> = ({
   isDropDisabled = false,
   style,
   onEmailClick,
-  deleteGroup,  
+  deleteGroup,
+  disableDragging = false,
 }) => {
   return (
     <Droppable
       droppableId={listId}
       type={listType}
       direction="vertical"
-      isDropDisabled={isDropDisabled}
+      isDropDisabled={isDropDisabled || disableDragging}
       ignoreContainerClipping={true}
       isCombineEnabled={false}
     >
@@ -112,7 +116,7 @@ const EmailList: React.FC<EmailListProps> = ({
               dropSnapshot.isDraggingOver, 
               Boolean(dropSnapshot.draggingFromThisWith)
             ),
-            opacity: isDropDisabled ? 0.5 : 1,
+            //opacity: isDropDisabled || disableDragging ? 0.5 : 1,
             transition: 'background-color 0.2s ease, opacity 0.1s ease',
             padding: '0px',
             userSelect: 'none',
@@ -126,10 +130,10 @@ const EmailList: React.FC<EmailListProps> = ({
             <div 
               className="overflow-x-hidden overflow-y-auto max-h-full"
             >
-              <InnerList emails={emails} dropProvided={dropProvided} onEmailClick={onEmailClick} deleteGroup={deleteGroup} />
+              <InnerList emails={emails} dropProvided={dropProvided} onEmailClick={onEmailClick} deleteGroup={deleteGroup} disableDragging={disableDragging} />
             </div>
           ) : (
-            <InnerList emails={emails} dropProvided={dropProvided} onEmailClick={onEmailClick} deleteGroup={deleteGroup} />
+            <InnerList emails={emails} dropProvided={dropProvided} onEmailClick={onEmailClick} deleteGroup={deleteGroup} disableDragging={disableDragging} />
           )}
         </div>
       )}

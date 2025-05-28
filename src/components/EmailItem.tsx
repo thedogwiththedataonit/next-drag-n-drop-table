@@ -14,6 +14,7 @@ interface EmailItemProps {
   isClone?: boolean;
   index?: number;
   onEmailClick?: (email: Email) => void;
+  disableDragging?: boolean;
 }
 
 function getStyle(provided: DraggableProvided, style?: React.CSSProperties) {
@@ -36,6 +37,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
   style,
   index,
   onEmailClick,
+  disableDragging = false,
 }) => {
 
   const handleClick = (e: React.MouseEvent) => {
@@ -52,11 +54,11 @@ const EmailItem: React.FC<EmailItemProps> = ({
     <tr
       ref={provided.innerRef}
       {...provided.draggableProps}
-      {...provided.dragHandleProps}
+      {...(disableDragging ? {} : provided.dragHandleProps)}
       onClick={handleClick}
       style={{
         ...getStyle(provided, style),
-        cursor: isDragging ? 'grabbing' : 'pointer',
+        cursor: isDragging ? 'grabbing' : disableDragging ? 'pointer' : 'grab',
       }}
       className={`
         text-sm group

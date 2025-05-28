@@ -10,7 +10,8 @@ import SortableTableHeader from "./SortableTableHeader";
 import { DraggableProvided } from "@hello-pangea/dnd";
 import { Button } from "./ui/button";
 import Link from "next/link";
-
+import { Sparkles, X } from "lucide-react";
+import { ChatboxWrapper } from "./chatbox-wrapper";
 interface AllEmailsTableProps {
   initial: DataMap;
   initialSortField?: SortField;
@@ -36,6 +37,7 @@ const AllEmailsTable: React.FC<AllEmailsTableProps> = ({
   // Email sheet state
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
 
   // Use nuqs for URL state management
   const [sortField, setSortField] = useQueryState('sortBy', {
@@ -95,8 +97,8 @@ const AllEmailsTable: React.FC<AllEmailsTableProps> = ({
           </Button>
         </Link>
       </div>
-      <div className="min-h-screen w-full border min-w-[1100px]">
-        {/* Sortable Column Headers */}
+
+      <ChatboxWrapper>
         <SortableTableHeader
           sortField={sortField}
           sortOrder={sortOrder}
@@ -121,14 +123,15 @@ const AllEmailsTable: React.FC<AllEmailsTableProps> = ({
             </tbody>
           </table>
         </div>
+      </ChatboxWrapper>
 
-        {/* Email Sheet */}
-        <EmailSheet
-          email={selectedEmail}
-          isOpen={isSheetOpen}
-          onClose={handleSheetClose}
-        />
-      </div>
+
+      {/* Email Sheet */}
+      <EmailSheet
+        email={selectedEmail}
+        isOpen={isSheetOpen}
+        onClose={handleSheetClose}
+      />
     </>
   );
 };

@@ -6,14 +6,15 @@ import { GroupProps } from "@/lib/types";
 import EmailList from "./EmailList";
 import { tableColumnWidths } from "@/lib/utils";
 
-const Group: React.FC<GroupProps> = ({
+const Group: React.FC<GroupProps & { disableDragging?: boolean }> = ({
   title,
   emails,
   index,
   isScrollable = false,
   onEmailClick,
   deleteGroup,
-  renameGroup
+  renameGroup,
+  disableDragging = false
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -77,7 +78,7 @@ const Group: React.FC<GroupProps> = ({
   }, [emails]);
 
   return (
-    <Draggable draggableId={title} index={index}>
+    <Draggable draggableId={title} index={index} isDragDisabled={disableDragging}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
@@ -87,11 +88,11 @@ const Group: React.FC<GroupProps> = ({
           {/* Column Header */}
           <div
             onClick={handleToggle}
-            {...provided.dragHandleProps}
+            {...(disableDragging ? {} : provided.dragHandleProps)}
             className={`
               flex items-center justify-start w-full
               transition-colors duration-200 ease-in-out
-              cursor-grab active:cursor-grabbing text-foreground
+              ${disableDragging ? "cursor-pointer" : "cursor-grab active:cursor-grabbing"} text-foreground
               ${isExpanded ? "rounded-t-sm" : "rounded-sm"}
               ${snapshot.isDragging
                 ? "bg-muted"
@@ -168,6 +169,7 @@ const Group: React.FC<GroupProps> = ({
                 internalScroll={isScrollable}
                 onEmailClick={onEmailClick}
                 deleteGroup={deleteGroup}
+                disableDragging={disableDragging}
                 style={{
                   backgroundColor: snapshot.isDragging ? "#f0fdf4" : undefined, // green-50
                 }}

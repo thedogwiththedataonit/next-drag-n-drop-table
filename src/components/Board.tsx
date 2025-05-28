@@ -14,6 +14,7 @@ import SortableTableHeader from "./SortableTableHeader";
 import Group from "./Group";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { ChatboxWrapper } from "./chatbox-wrapper";
 
 const DragDropContext = dynamic(
   () => import('@hello-pangea/dnd').then(mod => {
@@ -38,6 +39,7 @@ const Board: React.FC<BoardProps> = ({
 }) => {
   const [groups, setGroups] = useState(initial);
   const [ordered, setOrdered] = useState(Object.keys(initial));
+  const [disableDragging, setDisableDragging] = useState(false);
 
   // Email sheet state
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
@@ -228,6 +230,7 @@ const Board: React.FC<BoardProps> = ({
     setGroups(newGroups);
   };
 
+
   return (
     <>
       <div className="flex justify-end mb-2 gap-2">
@@ -239,56 +242,109 @@ const Board: React.FC<BoardProps> = ({
         <Button variant="outline" size="sm" onClick={() => AddGroup()}>
           Add Group
         </Button>
-      </div>
-      <div className="min-h-screen w-full border min-w-[1100px]">
-        {/* Sortable Column Headers */}
-        <SortableTableHeader
-          sortField={sortField}
-          sortOrder={sortOrder}
-          onSort={handleSort}
-        />
+        <Button variant="outline" size="sm" onClick={() => setDisableDragging(!disableDragging)}>
+          {disableDragging ? "Enable Dragging" : "Disable Dragging"}
+        </Button>
 
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable
-            droppableId="board"
-            type="GROUP"
-            direction="vertical"
-            isDropDisabled={false}
-            ignoreContainerClipping={Boolean(containerHeight)}
-            isCombineEnabled={false}
-          >
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                className="min-h-screen min-w-full flex flex-col items-start"
-                style={{ height: containerHeight }}
+      </div>
+
+      {
+        !disableDragging ? (
+          <div className={`min-h-screen w-full  min-w-[1100px] border`}>
+            {/* Sortable Column Headers */}
+            <SortableTableHeader
+              sortField={sortField}
+              sortOrder={sortOrder}
+              onSort={handleSort}
+            />
+
+            <DragDropContext onDragEnd={disableDragging ? () => { } : onDragEnd}>
+              <Droppable
+                droppableId="board"
+                type="GROUP"
+                direction="vertical"
+                isDropDisabled={disableDragging}
+                ignoreContainerClipping={Boolean(containerHeight)}
+                isCombineEnabled={false}
               >
-                {ordered.map((key, index) => (
-                  <Group
-                    key={key}
-                    index={index}
-                    title={key}
-                    emails={groups[key]}
-                    isScrollable={withScrollableColumns}
-                    onEmailClick={handleEmailClick}
-                    deleteGroup={() => deleteGroup(key)}
-                    renameGroup={renameGroup}
-                  />
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className="min-h-screen min-w-full flex flex-col items-start"
+                    style={{ height: containerHeight }}
+                  >
+                    {ordered.map((key, index) => (
+                      <Group
+                        key={key}
+                        index={index}
+                        title={key}
+                        emails={groups[key]}
+                        isScrollable={withScrollableColumns}
+                        onEmailClick={handleEmailClick}
+                        deleteGroup={() => deleteGroup(key)}
+                        renameGroup={renameGroup}
+                        disableDragging={disableDragging}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </div>
+        ) : (
+          <ChatboxWrapper>
+            {/* Sortable Column Headers */}
+            <SortableTableHeader
+              sortField={sortField}
+              sortOrder={sortOrder}
+              onSort={handleSort}
+            />
+            <DragDropContext onDragEnd={disableDragging ? () => { } : onDragEnd}>
+              <Droppable
+                droppableId="board"
+                type="GROUP"
+                direction="vertical"
+                isDropDisabled={disableDragging}
+                ignoreContainerClipping={Boolean(containerHeight)}
+                isCombineEnabled={false}
+              >
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className="min-h-screen min-w-full flex flex-col items-start"
+                    style={{ height: containerHeight }}
+                  >
+                    {ordered.map((key, index) => (
+                      <Group
+                        key={key}
+                        index={index}
+                        title={key}
+                        emails={groups[key]}
+                        isScrollable={withScrollableColumns}
+                        onEmailClick={handleEmailClick}
+                        deleteGroup={() => deleteGroup(key)}
+                        renameGroup={renameGroup}
+                        disableDragging={disableDragging}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </ChatboxWrapper>
+        )
+      }
 
-        {/* Email Sheet */}
-        <EmailSheet
-          email={selectedEmail}
-          isOpen={isSheetOpen}
-          onClose={handleSheetClose}
-        />
-      </div>
+      {/* Email Sheet */}
+      <EmailSheet
+        email={selectedEmail}
+        isOpen={isSheetOpen}
+        onClose={handleSheetClose}
+      />
     </>
   );
 };
