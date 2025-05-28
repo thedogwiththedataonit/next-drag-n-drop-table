@@ -111,6 +111,8 @@ const Group: React.FC<GroupProps> = ({
                     onBlur={handleTitleSave}
                     className="font-semibold text-sm bg-transparent border-none focus:outline-none focus:ring-0 focus:border-none"
                     autoFocus
+                    size={Math.max(editingTitle.length + 2, 8)}
+                    style={{ width: `${Math.max(editingTitle.length + 2, 8)}ch` }}
                   />
                 ) : (
                   <h2 
