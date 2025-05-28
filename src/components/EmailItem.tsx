@@ -63,7 +63,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
         bg-background hover:bg-muted/40 transition-colors cursor-pointer
         ${isGroupedOver ? 'bg-muted/40' : ''}
         flex flex-row justify-start items-center
-        ${isDragging ? "rounded-sm shadow-lg border" : "rounded-none shadow-none border-none"}
+        ${isDragging ? "rounded-sm shadow-lg border" : "rounded-none shadow-none border-b border-border/50"}
       `}
       data-is-dragging={isDragging}
       data-testid={email.id}

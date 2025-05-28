@@ -121,7 +121,7 @@ const Group: React.FC<GroupProps> = ({
                   </h2>
                 )}
                 <ChevronDown
-                  className={`h-5 w-5  text-foreground/40 transition-transform duration-200 ease-in-out ${isExpanded ? 'rotate-0' : 'rotate-180'
+                  className={`h-4 w-4  text-foreground/40 transition-transform duration-200 ease-in-out ${isExpanded ? 'rotate-0' : '-rotate-90'
                     }`}
                 />
               </div>
