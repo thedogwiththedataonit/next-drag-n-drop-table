@@ -26,7 +26,7 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
 
           <button
             onClick={() => onSort('name')}
-            className={`px-4 py-2 text-left font-medium hover:bg-muted/40 transition-colors flex-1 ${
+            className={`px-4 py-2 text-left font-medium hover:bg-muted/40 transition-colors flex-1 min-w-[385px] ${
               sortField === 'name' ? 'bg-muted/40' : 'text-foreground'
             }`}
           > 
