@@ -1,12 +1,21 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from "react"
-import { Send, X, RefreshCcw, Copy, Share2, ThumbsUp, ThumbsDown, ChevronLeft, Mail, Plus, Minus, Users } from "lucide-react"
+import { Send, X, RefreshCcw, Copy, Share2, ThumbsUp, ThumbsDown, ChevronLeft, Mail, Plus, Minus, Users, MessageSquare, Clock, ChevronRight, Search, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Email } from "@/lib/types"
 
 // Types for chat components
 type MessageType = "user" | "system"
+
+export interface Chat {
+    id: string
+    name: string
+    emails: number
+    lastMessage: string
+    lastMessageTimestamp: string
+    messages: ChatMessage[]
+}
 
 export interface ChatMessage {
     id: string
@@ -17,6 +26,7 @@ export interface ChatMessage {
     isSelection?: boolean
     selectionAction?: 'added' | 'removed'
     emailData?: Email
+    timestamp: string
 }
 
 export interface MessageSection {
@@ -54,6 +64,66 @@ export interface Group {
 const WORD_DELAY = 40 // ms per word
 const CHUNK_SIZE = 2 // Number of words to add at once
 
+// Dummy chat data
+const DUMMY_CHATS: Chat[] = [
+    {
+        id: "chat-1",
+        name: "Marketing Team Analysis",
+        emails: 15,
+        lastMessage: "The marketing team emails show high engagement rates...",
+        lastMessageTimestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+        messages: []
+    },
+    {
+        id: "chat-2", 
+        name: "Customer Support Review",
+        emails: 8,
+        lastMessage: "Most support tickets are resolved within 24 hours...",
+        lastMessageTimestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
+        messages: []
+    },
+    {
+        id: "chat-3",
+        name: "Sales Pipeline Analysis", 
+        emails: 23,
+        lastMessage: "Q4 sales emails indicate strong pipeline growth...",
+        lastMessageTimestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+        messages: []
+    },
+    {
+        id: "chat-4",
+        name: "Executive Communications",
+        emails: 6,
+        lastMessage: "Board meeting preparations are on track...",
+        lastMessageTimestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+        messages: []
+    },
+    {
+        id: "chat-5",
+        name: "Project Updates",
+        emails: 12,
+        lastMessage: "Development milestones are being met consistently...",
+        lastMessageTimestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+        messages: []
+    },
+    {
+        id: "chat-6",
+        name: "Client Onboarding",
+        emails: 9,
+        lastMessage: "New client integration process is streamlined...",
+        lastMessageTimestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days ago
+        messages: []
+    },
+    {
+        id: "chat-7",
+        name: "HR Policy Review",
+        emails: 4,
+        lastMessage: "Updated policies show improved compliance...",
+        lastMessageTimestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
+        messages: []
+    }
+]
+
 interface AIAnalysisChatProps {
     selectedEmails: Email[]
     groups: Group[]
@@ -65,6 +135,14 @@ export function AIAnalysisChat({
     groups,
     handleOpenSheet,
 }: AIAnalysisChatProps) {
+    // View state
+    const [currentView, setCurrentView] = useState<'chat' | 'history'>('chat')
+    const [isTransitioning, setIsTransitioning] = useState(false)
+    
+    // Chat history state
+    const [searchQuery, setSearchQuery] = useState("")
+    const [filteredChats, setFilteredChats] = useState<Chat[]>(DUMMY_CHATS)
+
     // Chat state
     const [inputValue, setInputValue] = useState("")
     const [messages, setMessages] = useState<ChatMessage[]>([
@@ -72,7 +150,8 @@ export function AIAnalysisChat({
             id: "initial-message",
             content: "Hi there! I can help analyze the emails you've selected. What would you like to know about them? I can see you've selected " + selectedEmails.length + " emails. What would you like to know about them?",
             type: "system",
-            completed: true
+            completed: true,
+            timestamp: new Date().toISOString()
         }
     ])
     const [messageSections, setMessageSections] = useState<MessageSection[]>([])
@@ -88,6 +167,55 @@ export function AIAnalysisChat({
     const latestUserMessageRef = useRef<HTMLDivElement>(null)
     const previousSelectedEmailsRef = useRef<Email[]>([])
     const inputRef = useRef<HTMLInputElement>(null)
+
+    // Filter chats based on search query
+    useEffect(() => {
+        if (searchQuery.trim()) {
+            const filtered = DUMMY_CHATS.filter(chat => 
+                chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            setFilteredChats(filtered)
+        } else {
+            setFilteredChats(DUMMY_CHATS)
+        }
+    }, [searchQuery])
+
+    // Handle view transition
+    const handleViewChange = async (newView: 'chat' | 'history') => {
+        if (isTransitioning || currentView === newView) return
+        
+        setIsTransitioning(true)
+        
+        // Wait for animation to complete
+        setTimeout(() => {
+            setCurrentView(newView)
+            setIsTransitioning(false)
+        }, 300)
+    }
+
+    // Handle chat selection from history
+    const handleChatSelect = (chat: Chat) => {
+        // You could load the selected chat's messages here
+        console.log("Selected chat:", chat)
+        handleViewChange('chat')
+    }
+
+    // Format timestamp for chat history
+    const formatTimestamp = (timestamp: string) => {
+        const date = new Date(timestamp)
+        const now = new Date()
+        const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+        
+        if (diffInHours < 1) return "Just now"
+        if (diffInHours < 24) return `${diffInHours}h ago`
+        
+        const diffInDays = Math.floor(diffInHours / 24)
+        if (diffInDays < 7) return `${diffInDays}d ago`
+        
+        const diffInWeeks = Math.floor(diffInDays / 7)
+        return `${diffInWeeks}w ago`
+    }
 
     // Auto-scroll to bottom when new messages arrive
     useEffect(() => {
@@ -207,7 +335,8 @@ export function AIAnalysisChat({
                     ? `Hi there! I can help analyze the ${selectedEmails.length} email${selectedEmails.length !== 1 ? 's' : ''} you've selected. What would you like to know about ${selectedEmails.length === 1 ? 'it' : 'them'}?`
                     : "Hi there! Select some emails and I can help analyze them. What would you like to know?",
                 type: "system" as MessageType,
-                completed: true
+                completed: true,
+                timestamp: new Date().toISOString()
             };
 
             setMessages(prev => [initialMessage, ...prev.slice(1)]);
@@ -220,12 +349,12 @@ export function AIAnalysisChat({
         }
 
         // Find added emails
-        const addedEmails = currentEmails.filter(email => 
+        const addedEmails = currentEmails.filter(email =>
             !previousEmails.some(prevEmail => prevEmail.id === email.id)
         );
 
         // Find removed emails
-        const removedEmails = previousEmails.filter(prevEmail => 
+        const removedEmails = previousEmails.filter(prevEmail =>
             !currentEmails.some(email => email.id === prevEmail.id)
         );
 
@@ -238,7 +367,8 @@ export function AIAnalysisChat({
                 completed: true,
                 isSelection: true,
                 selectionAction: 'added',
-                emailData: email
+                emailData: email,
+                timestamp: new Date().toISOString()
             };
 
             setMessages(prev => [...prev, selectionMessage]);
@@ -253,7 +383,8 @@ export function AIAnalysisChat({
                 completed: true,
                 isSelection: true,
                 selectionAction: 'removed',
-                emailData: email
+                emailData: email,
+                timestamp: new Date().toISOString()
             };
 
             setMessages(prev => [...prev, selectionMessage]);
@@ -413,6 +544,7 @@ export function AIAnalysisChat({
                 id: messageId,
                 content: "",
                 type: "system",
+                timestamp: new Date().toISOString()
             },
         ]);
 
@@ -451,6 +583,7 @@ export function AIAnalysisChat({
                 content: userMessage,
                 type: "user" as MessageType,
                 newSection: shouldAddNewSection,
+                timestamp: new Date().toISOString()
             };
 
             // Reset input before starting the AI response
@@ -534,6 +667,11 @@ export function AIAnalysisChat({
                     )}
                 </div>
 
+                {/* Message timestamp */}
+                <div className="text-xs text-muted-foreground px-4 mb-2">
+                    {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
+
                 {/* Message actions - only for system messages that are not selection messages */}
                 {message.type === "system" && message.completed && !message.isSelection && (
                     <div className="flex items-center gap-2 px-4 mt-1 mb-2">
@@ -558,10 +696,142 @@ export function AIAnalysisChat({
         );
     };
 
-
-    return (
-
+    // Chat History View Component
+    const renderChatHistory = () => (
         <div className="w-full flex flex-col h-full shadow-lg overflow-hidden bg-background relative">
+            {/* Chat History Header */}
+            <div className="to-background border-b border-border/50 backdrop-blur-sm">
+                <div className="p-4 pb-0">
+                    <div className="flex items-center justify-between mb-3 animate-in fade-in-0 slide-in-from-right-2 duration-500">
+                        <div className="flex items-center gap-3">
+                            <button 
+                                onClick={() => handleViewChange('chat')}
+                                className="p-2 hover:bg-background/50 rounded-lg transition-colors"
+                            >
+                                <ArrowLeft className="h-5 w-5 text-muted-foreground" />
+                            </button>
+                            <div className="p-2 bg-primary/10 rounded-lg">
+                                <MessageSquare className="h-5 w-5 text-primary" />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-semibold text-foreground">Chat History</h2>
+                                <p className="text-xs text-muted-foreground">
+                                    {filteredChats.length} conversation{filteredChats.length !== 1 ? 's' : ''}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Search Bar */}
+            <div className="p-4 border-b border-border/50">
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search conversations..."
+                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                    />
+                </div>
+            </div>
+
+            {/* Chat List */}
+            <div className="flex-grow overflow-y-auto">
+                {filteredChats.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full text-center p-8">
+                        <MessageSquare className="h-12 w-12 text-muted-foreground/50 mb-4" />
+                        <p className="text-muted-foreground">No conversations found</p>
+                        <p className="text-sm text-muted-foreground/70">Try adjusting your search terms</p>
+                    </div>
+                ) : (
+                    <div className="p-2">
+                        {filteredChats.map((chat, index) => (
+                            <div
+                                key={chat.id}
+                                onClick={() => handleChatSelect(chat)}
+                                className={cn(
+                                    "p-4 rounded-lg mb-2 cursor-pointer transition-all duration-200 hover:bg-muted/50 border border-transparent hover:border-border/50 group",
+                                    "animate-in fade-in-0 slide-in-from-right-1 duration-300"
+                                )}
+                                style={{ animationDelay: `${index * 50}ms` }}
+                            >
+                                <div className="flex items-start justify-between mb-2">
+                                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                                        <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                                            <MessageSquare className="h-4 w-4 text-primary" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="font-medium text-foreground truncate">
+                                                {chat.name}
+                                            </h3>
+                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                <Mail className="h-3 w-3" />
+                                                <span>{chat.emails} email{chat.emails !== 1 ? 's' : ''}</span>
+                                                <span>•</span>
+                                                <Clock className="h-3 w-3" />
+                                                <span>{formatTimestamp(chat.lastMessageTimestamp)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </div>
+                                <p className="text-sm text-muted-foreground line-clamp-2 ml-11">
+                                    {chat.lastMessage}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+
+    // Main Chat View Component  
+    const renderMainChat = () => (
+        <div className="w-full flex flex-col h-full shadow-lg overflow-hidden bg-background relative">
+
+            {/* Beautiful Animated Header */}
+            <div className="to-background border-b border-border/50 backdrop-blur-sm">
+                <div className="p-4 pb-0">
+                    {/* Top row with title and navigation */}
+                    <div className="flex items-center justify-between mb-3 animate-in fade-in-0 slide-in-from-top-2 duration-500">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 bg-primary/10 rounded-lg">
+                                <MessageSquare className="h-5 w-5 text-primary" />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-semibold text-foreground">Email Analysis Chat</h2>
+                                <p className="text-xs text-muted-foreground">{/* First message timestamp */}
+                                    {messages.length > 0 && (
+
+                                        <span className="text-sm text-muted-foreground">
+                                            Started {new Date(messages[0].timestamp).toLocaleString([], {
+                                                month: 'short',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                        </span>
+                                    )}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                </p>
+                            </div>
+                        </div>
+                        <button 
+                            onClick={() => handleViewChange('history')}
+                            className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-background/50 rounded-lg transition-all duration-200 hover:shadow-sm"
+                        >
+                            All Chats
+                            <ChevronRight className="h-4 w-4" />
+                        </button>
+                    </div>
+
+                </div>
+            </div>
 
             <div
                 ref={chatContainerRef}
@@ -638,6 +908,35 @@ export function AIAnalysisChat({
                     </button>
                 </div>
 
+            </div>
+        </div>
+    );
+
+
+    return (
+        <div className="relative w-full h-full overflow-hidden">
+            {/* Chat View with Animation */}
+            <div 
+                className={cn(
+                    "absolute inset-0 transition-all duration-300 ease-in-out",
+                    currentView === 'chat' && !isTransitioning
+                        ? "translate-x-0 opacity-100"
+                        : "translate-x-[-100%] opacity-0"
+                )}
+            >
+                {renderMainChat()}
+            </div>
+
+            {/* Chat History View with Animation */}
+            <div 
+                className={cn(
+                    "absolute inset-0 transition-all duration-300 ease-in-out",
+                    currentView === 'history' && !isTransitioning
+                        ? "translate-x-0 opacity-100"
+                        : "translate-x-[100%] opacity-0"
+                )}
+            >
+                {renderChatHistory()}
             </div>
         </div>
     )
