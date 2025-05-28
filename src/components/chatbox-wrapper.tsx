@@ -11,6 +11,7 @@ interface ChatboxWrapperProps {
     currentChatOpen: boolean;
     setCurrentChatOpen: (chatOpen: boolean) => void;
     setSelectedEmails: (selectedEmails: Email[]) => void;
+    handleOpenSheet: (email: Email) => void;
 }
 
 export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
@@ -25,17 +26,16 @@ export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
         <>
             <div className="flex flex-row relative w-full">
                 <div className={`border transition-all duration-300 ease-in-out ${chatOpen ? 'scale-95 overflow-scroll h-[90vh] w-2/3 shadow-lg rounded-lg' : ' w-full'}`}>
-                    <div id="board" className={`min-h-screen w-full  min-w-[1100px]`}>
+                    <div id="board" className={`min-h-screen w-full  min-w-[1100px] relative`}>
                         {children}
                     </div>
                 </div>
                 { /* AI Chat*/}
-                <div className={`transition-all duration-300 ease-in-out animate-in fade-in-0 slide-in-from-right-1/2 ${chatOpen ? 'scale-95 overflow-scroll h-[90vh] w-1/3 block' : 'scale-100 hidden w-0'}`}>
+                <div className={`border rounded-lg shadow-lg transition-all duration-300 ease-in-out animate-in fade-in-0 slide-in-from-right-1/2 ${chatOpen ? 'scale-95 overflow-scroll h-[90vh] w-1/3 block' : 'scale-100 hidden w-0'}`}>
                     <AIAnalysisChat 
-                        selectedRows={new Set(props.selectedEmails.map(email => email.id))}
+                        selectedEmails={props.selectedEmails}
                         groups={[]}
-                        isChatOpen={chatOpen}
-                        setIsChatOpen={setChatOpen}
+                        handleOpenSheet={props.handleOpenSheet}
                     />
                 </div>
             </div>

@@ -116,6 +116,10 @@ const AllEmailsTable: React.FC<AllEmailsTableProps> = ({
         currentChatOpen={currentChatOpen} 
         setCurrentChatOpen={setCurrentChatOpen}
         setSelectedEmails={setSelectedEmails}
+        handleOpenSheet={(email: Email) => {
+          setSelectedEmail(email);
+          setIsSheetOpen(true);
+        }}
       >
         <SortableTableHeader
           sortField={sortField}

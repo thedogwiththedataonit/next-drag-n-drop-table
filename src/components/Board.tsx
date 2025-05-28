@@ -259,55 +259,59 @@ const Board: React.FC<BoardProps> = ({
       </div>
 
 
-      <ChatboxWrapper
-        selectedEmails={selectedEmails}
-        currentChatOpen={chatOpen}
-        setCurrentChatOpen={setChatOpen}
-        setSelectedEmails={setSelectedEmails}
-
-      >
-        {/* Sortable Column Headers */}
-        <SortableTableHeader
-          sortField={sortField}
-          sortOrder={sortOrder}
-          onSort={handleSort}
-        />
-        <DragDropContext onDragEnd={chatOpen ? () => { } : onDragEnd}>
-          <Droppable
-            droppableId="board"
-            type="GROUP"
-            direction="vertical"
-            isDropDisabled={chatOpen}
-            ignoreContainerClipping={Boolean(containerHeight)}
-            isCombineEnabled={false}
+          <ChatboxWrapper
+            selectedEmails={selectedEmails}
+            currentChatOpen={chatOpen}
+            setCurrentChatOpen={setChatOpen}
+            setSelectedEmails={setSelectedEmails}
+            handleOpenSheet={(email: Email) => { 
+              setSelectedEmail(email);
+              setIsSheetOpen(true);
+            }
+          }
           >
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                className="min-h-screen min-w-full flex flex-col items-start"
-                style={{ height: containerHeight }}
+            {/* Sortable Column Headers */}
+            <SortableTableHeader
+              sortField={sortField}
+              sortOrder={sortOrder}
+              onSort={handleSort}
+            />
+            <DragDropContext onDragEnd={chatOpen ? () => { } : onDragEnd}>
+              <Droppable
+                droppableId="board"
+                type="GROUP"
+                direction="vertical"
+                isDropDisabled={chatOpen}
+                ignoreContainerClipping={Boolean(containerHeight)}
+                isCombineEnabled={false}
               >
-                {ordered.map((key, index) => (
-                  <Group
-                    key={key}
-                    index={index}
-                    title={key}
-                    emails={groups[key]}
-                    isScrollable={withScrollableColumns}
-                    onEmailClick={handleEmailClick}
-                    deleteGroup={() => deleteGroup(key)}
-                    renameGroup={renameGroup}
-                    disableDragging={chatOpen}
-                    selectedEmails={selectedEmails.map(email => email.id)}
-                  />
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
-      </ChatboxWrapper>
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    className="min-h-screen min-w-full flex flex-col items-start"
+                    style={{ height: containerHeight }}
+                  >
+                    {ordered.map((key, index) => (
+                      <Group
+                        key={key}
+                        index={index}
+                        title={key}
+                        emails={groups[key]}
+                        isScrollable={withScrollableColumns}
+                        onEmailClick={handleEmailClick}
+                        deleteGroup={() => deleteGroup(key)}
+                        renameGroup={renameGroup}
+                        disableDragging={chatOpen}
+                        selectedEmails={selectedEmails.map(email => email.id)}
+                      />
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </ChatboxWrapper>
 
 
       {/* Email Sheet */}

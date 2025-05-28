@@ -20,7 +20,7 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
   };
 
   return (
-    <div className="flex flex-col items-start mb-0 border-b border-foreground/20">
+    <div className="flex flex-col items-start mb-0 border-b border-foreground/20 sticky top-0 left-0 w-full ">
       <div className="w-full bg-background shadow-sm  overflow-hidden text-sm">
         <div className="flex">
 

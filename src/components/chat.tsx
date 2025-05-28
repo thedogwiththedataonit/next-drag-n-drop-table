@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react"
 import { Send, X, RefreshCcw, Copy, Share2, ThumbsUp, ThumbsDown, ChevronLeft, Mail, Plus, Minus, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Email } from "@/lib/types"
 
 // Types for chat components
 type MessageType = "user" | "system"
@@ -15,7 +16,7 @@ export interface ChatMessage {
     newSection?: boolean
     isSelection?: boolean
     selectionAction?: 'added' | 'removed'
-    emailData?: any
+    emailData?: Email
 }
 
 export interface MessageSection {
@@ -54,22 +55,22 @@ const WORD_DELAY = 40 // ms per word
 const CHUNK_SIZE = 2 // Number of words to add at once
 
 interface AIAnalysisChatProps {
-    selectedRows: Set<string>
+    selectedEmails: Email[]
     groups: Group[]
-    isChatOpen: boolean
-    setIsChatOpen: (isOpen: boolean) => void
+    handleOpenSheet: (email: Email) => void
 }
 
 export function AIAnalysisChat({
-    selectedRows,
+    selectedEmails,
     groups,
+    handleOpenSheet,
 }: AIAnalysisChatProps) {
     // Chat state
     const [inputValue, setInputValue] = useState("")
     const [messages, setMessages] = useState<ChatMessage[]>([
         {
             id: "initial-message",
-            content: "Hi there! I can help analyze the emails you've selected. What would you like to know about them? I can see you've selected " + selectedRows.size + " emails. What would you like to know about them?",
+            content: "Hi there! I can help analyze the emails you've selected. What would you like to know about them? I can see you've selected " + selectedEmails.length + " emails. What would you like to know about them?",
             type: "system",
             completed: true
         }
@@ -85,6 +86,8 @@ export function AIAnalysisChat({
     const chatContainerRef = useRef<HTMLDivElement>(null)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const latestUserMessageRef = useRef<HTMLDivElement>(null)
+    const previousSelectedEmailsRef = useRef<Email[]>([])
+    const inputRef = useRef<HTMLInputElement>(null)
 
     // Auto-scroll to bottom when new messages arrive
     useEffect(() => {
@@ -191,93 +194,17 @@ export function AIAnalysisChat({
         };
     }, [messages]);
 
-    // Add event listeners for email selection events
-    useEffect(() => {
-        // Handler for individual email selection
-        const handleSelectionEvent = (e: CustomEvent<{ selectedCount: number, latestAction: string, email: any }>) => {
-            const { selectedCount, latestAction, email } = e.detail;
-
-            // Create a system message about the selection change
-            const messageId = `selection-${Date.now()}`;
-
-            // Add the message to the chat
-            setMessages(prev => [
-                ...prev,
-                {
-                    id: messageId,
-                    content: `${email.title}`,
-                    type: "system",
-                    completed: true,
-                    isSelection: true,
-                    selectionAction: latestAction === 'selected' ? 'added' : 'removed',
-                    emailData: email
-                }
-            ]);
-
-            // Add to completed messages set
-            setCompletedMessages(prev => new Set(prev).add(messageId));
-
-            // Auto-scroll to bottom
-            setTimeout(() => {
-                if (messagesEndRef.current) {
-                    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-                }
-            }, 100);
-        };
-
-        // Handler for group selection
-        const handleGroupSelectionEvent = (e: CustomEvent<{ groupId: string, groupTitle: string, action: string, count: number }>) => {
-            const { groupTitle, action, count } = e.detail;
-
-            // Create a system message about the group selection change
-            const messageId = `group-selection-${Date.now()}`;
-
-            // Add the message to the chat
-            setMessages(prev => [
-                ...prev,
-                {
-                    id: messageId,
-                    content: `${groupTitle} (${count} emails)`,
-                    type: "system",
-                    completed: true,
-                    isSelection: true,
-                    selectionAction: action === 'selected' ? 'added' : 'removed',
-                    emailData: { title: groupTitle, type: 'Group', count }
-                }
-            ]);
-
-            // Add to completed messages set
-            setCompletedMessages(prev => new Set(prev).add(messageId));
-
-            // Auto-scroll to bottom
-            setTimeout(() => {
-                if (messagesEndRef.current) {
-                    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-                }
-            }, 100);
-        };
-
-        // Type assertion for the event listeners
-        const selectionListener = handleSelectionEvent as EventListener;
-        const groupSelectionListener = handleGroupSelectionEvent as EventListener;
-
-        document.addEventListener('update-chat-selection', selectionListener);
-        document.addEventListener('update-chat-group-selection', groupSelectionListener);
-
-        return () => {
-            document.removeEventListener('update-chat-selection', selectionListener);
-            document.removeEventListener('update-chat-group-selection', groupSelectionListener);
-        };
-    }, []);
-
     // Update initial message when selectedRows changes
     useEffect(() => {
+        const previousEmails = previousSelectedEmailsRef.current;
+        const currentEmails = selectedEmails;
+
         // Only update if we have the initial message
         if (messages.length > 0 && messages[0].id === "initial-message") {
             const initialMessage = {
                 id: "initial-message",
-                content: selectedRows.size > 0
-                    ? `Hi there! I can help analyze the ${selectedRows.size} email${selectedRows.size !== 1 ? 's' : ''} you've selected. What would you like to know about ${selectedRows.size === 1 ? 'it' : 'them'}?`
+                content: selectedEmails.length > 0
+                    ? `Hi there! I can help analyze the ${selectedEmails.length} email${selectedEmails.length !== 1 ? 's' : ''} you've selected. What would you like to know about ${selectedEmails.length === 1 ? 'it' : 'them'}?`
                     : "Hi there! Select some emails and I can help analyze them. What would you like to know?",
                 type: "system" as MessageType,
                 completed: true
@@ -285,7 +212,57 @@ export function AIAnalysisChat({
 
             setMessages(prev => [initialMessage, ...prev.slice(1)]);
         }
-    }, [selectedRows.size]);
+
+        // Skip processing on initial load
+        if (previousEmails.length === 0 && currentEmails.length === 0) {
+            previousSelectedEmailsRef.current = currentEmails;
+            return;
+        }
+
+        // Find added emails
+        const addedEmails = currentEmails.filter(email => 
+            !previousEmails.some(prevEmail => prevEmail.id === email.id)
+        );
+
+        // Find removed emails
+        const removedEmails = previousEmails.filter(prevEmail => 
+            !currentEmails.some(email => email.id === prevEmail.id)
+        );
+
+        // Create messages for added emails
+        addedEmails.forEach(email => {
+            const selectionMessage: ChatMessage = {
+                id: `selection-added-${email.id}-${Date.now()}`,
+                content: `${email.name} added`,
+                type: "system",
+                completed: true,
+                isSelection: true,
+                selectionAction: 'added',
+                emailData: email
+            };
+
+            setMessages(prev => [...prev, selectionMessage]);
+        });
+
+        // Create messages for removed emails
+        removedEmails.forEach(email => {
+            const selectionMessage: ChatMessage = {
+                id: `selection-removed-${email.id}-${Date.now()}`,
+                content: `${email.name} removed`,
+                type: "system",
+                completed: true,
+                isSelection: true,
+                selectionAction: 'removed',
+                emailData: email
+            };
+
+            setMessages(prev => [...prev, selectionMessage]);
+        });
+
+        // Update the ref with current emails
+        previousSelectedEmailsRef.current = currentEmails;
+
+    }, [selectedEmails]);
 
     // Text streaming simulation
     const simulateTextStreaming = async (text: string) => {
@@ -324,7 +301,7 @@ export function AIAnalysisChat({
         const regions = new Set<string>();
         groups.forEach(group => {
             group.items.forEach(item => {
-                if (selectedRows.has(item.id)) {
+                if (selectedEmails.map(email => email.id).includes(item.id)) {
                     regions.add(group.name);
                 }
             });
@@ -336,7 +313,7 @@ export function AIAnalysisChat({
         const selectedGroups = new Set<string>();
         groups.forEach(group => {
             group.items.forEach(item => {
-                if (selectedRows.has(item.id)) {
+                if (selectedEmails.map(email => email.id).includes(item.id)) {
                     selectedGroups.add(group.id);
                 }
             });
@@ -351,7 +328,7 @@ export function AIAnalysisChat({
 
         groups.forEach(group => {
             group.items.forEach(item => {
-                if (selectedRows.has(item.id)) {
+                if (selectedEmails.map(email => email.id).includes(item.id)) {
                     total++;
                     if (item.status === "Active") {
                         activeCount++;
@@ -372,7 +349,7 @@ export function AIAnalysisChat({
 
         groups.forEach(group => {
             group.items.forEach(item => {
-                if (selectedRows.has(item.id)) {
+                if (selectedEmails.map(email => email.id).includes(item.id)) {
                     const balanceValue = Number.parseFloat(item.balance.replace(/[^0-9.-]+/g, ""));
                     if (!isNaN(balanceValue)) {
                         total += balanceValue;
@@ -389,7 +366,7 @@ export function AIAnalysisChat({
 
         groups.forEach(group => {
             group.items.forEach(item => {
-                if (selectedRows.has(item.id)) {
+                if (selectedEmails.map(email => email.id).includes(item.id)) {
                     const balanceValue = Number.parseFloat(item.balance.replace(/[^0-9.-]+/g, ""));
                     if (!isNaN(balanceValue) && balanceValue > highest) {
                         highest = balanceValue;
@@ -405,7 +382,7 @@ export function AIAnalysisChat({
 
     // Generate AI response based on selected emails
     const getAIResponse = (userMessage: string) => {
-        const selectedCount = selectedRows.size;
+        const selectedCount = selectedEmails.length;
 
         // Generate a response that mentions the selected emails
         if (userMessage.toLowerCase().includes("summarize") || userMessage.toLowerCase().includes("summary")) {
@@ -454,6 +431,11 @@ export function AIAnalysisChat({
         setStreamingWords([]);
         setStreamingMessageId(null);
         setIsStreaming(false);
+
+        // Refocus the input after the AI response is completed
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
     }
 
     // Handle chat form submission
@@ -490,6 +472,7 @@ export function AIAnalysisChat({
         if (message.isSelection) {
             return (
                 <div
+                    onClick={() => handleOpenSheet(message.emailData as Email)}
                     key={message.id}
                     className="flex flex-col mb-2"
                 >
@@ -604,6 +587,29 @@ export function AIAnalysisChat({
             </div>
 
             <div className="p-4 pb-1 bg-background/50 backdrop-blur-sm pb-4">
+                {/* Current Emails Summary */}
+                {selectedEmails.length > 0 && (
+                    <div className="mb-3 p-3 bg-muted/30 border border-border rounded-lg">
+                        <div className="text-sm font-medium text-muted-foreground mb-2">
+                            Currently selected ({selectedEmails.length}):
+                        </div>
+                        <div className="flex flex-wrap gap-2 max-h-20 overflow-y-auto">
+                            {selectedEmails.map((email) => (
+                                <div
+                                    onClick={() => handleOpenSheet(email)}
+                                    key={email.id}
+                                    className="inline-flex items-center gap-1 px-2 py-1 bg-background border border-border rounded text-xs"
+                                >
+                                    <Mail className="h-3 w-3 text-muted-foreground" />
+                                    <span className="truncate max-w-[120px]" title={email.name}>
+                                        {email.name}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 <div className="flex gap-2">
                     <input
                         type="text"
@@ -617,6 +623,7 @@ export function AIAnalysisChat({
                             "border border-border bg-background",
                             isStreaming && "opacity-50"
                         )}
+                        ref={inputRef}
                     />
                     <button
                         onClick={handleSubmit}

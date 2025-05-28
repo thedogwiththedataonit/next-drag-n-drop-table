@@ -8,7 +8,7 @@ export interface Email {
   createdAt: string;
   updatedAt: string;
   audience: string;
-
+  type: string;
   openRate: number;
   clickRate: number;
   sentDate: string;
