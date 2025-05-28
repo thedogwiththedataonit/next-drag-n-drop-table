@@ -27,8 +27,6 @@ function getStyle(provided: DraggableProvided, style?: React.CSSProperties) {
   };
 }
 
-const getBorderColor = (isDragging: boolean) =>
-  isDragging ? { borderColor: "#059669" } : { borderColor: "transparent" };
 
 const EmailItem: React.FC<EmailItemProps> = ({
   email,
@@ -39,7 +37,6 @@ const EmailItem: React.FC<EmailItemProps> = ({
   index,
   onEmailClick,
 }) => {
-  const borderStyle = getBorderColor(isDragging);
 
   const handleClick = (e: React.MouseEvent) => {
     // Don't trigger click while dragging
@@ -59,16 +56,14 @@ const EmailItem: React.FC<EmailItemProps> = ({
       onClick={handleClick}
       style={{
         ...getStyle(provided, style),
-        ...borderStyle,
         cursor: isDragging ? 'grabbing' : 'pointer',
       }}
       className={`
         text-sm group
         bg-background hover:bg-muted/40 transition-colors cursor-pointer
-        border-none
         ${isGroupedOver ? 'bg-muted/40' : ''}
         flex flex-row justify-start items-center
-        ${isDragging ? "shadow-lg" : "shadow-none"}
+        ${isDragging ? "rounded-sm shadow-lg border" : "rounded-none shadow-none border-none"}
       `}
       data-is-dragging={isDragging}
       data-testid={email.id}

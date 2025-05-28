@@ -82,7 +82,7 @@ const Group: React.FC<GroupProps> = ({
         <div
           ref={provided.innerRef}
           {...provided.draggableProps}
-          className="flex flex-col w-full h-full"
+          className={`flex flex-col w-full h-full ${snapshot.isDragging ? "shadow-md rounded-lg" : ""}`}
         >
           {/* Column Header */}
           <div
@@ -91,10 +91,11 @@ const Group: React.FC<GroupProps> = ({
             className={`
               flex items-center justify-start w-full
               transition-colors duration-200 ease-in-out
-              cursor-grab active:cursor-grabbing
+              cursor-grab active:cursor-grabbing text-foreground
+              ${isExpanded ? "rounded-t-sm" : "rounded-sm"}
               ${snapshot.isDragging
-                ? "bg-muted text-muted-foreground rounded-sm"
-                : "bg-background text-foreground hover:bg-muted/50"
+                ? "bg-muted"
+                : "bg-background hover:bg-muted/50"
               }
             `}
             aria-label={`${title} quote list`}
@@ -125,31 +126,31 @@ const Group: React.FC<GroupProps> = ({
                 />
               </div>
             </div>
-            <div className="h-full px-4" style={{ width: tableColumnWidths().audience }}></div>
-            <div className="h-full px-4" style={{ width: tableColumnWidths().updatedAt }}></div>
-            <div className="h-full px-4" style={{ width: tableColumnWidths().sent }}>
+            <div className="h-full px-4 py-2" style={{ width: tableColumnWidths().audience }}></div>
+            <div className="h-full px-4 py-2" style={{ width: tableColumnWidths().updatedAt }}></div>
+            <div className="h-full px-4 py-2" style={{ width: tableColumnWidths().sent }}>
               <span className="text-sm font-medium">
                 {groupMetrics.totalSent.toLocaleString()}
               </span>
             </div>
-            <div className="h-full px-4" style={{ width: tableColumnWidths().openRate }}>
+            <div className="h-full px-4 py-2" style={{ width: tableColumnWidths().openRate }}>
               <span className="text-sm font-medium">
                 {groupMetrics.avgOpenRate.toFixed(1)}%
               </span>
             </div>
-            <div className="h-full px-4" style={{ width: tableColumnWidths().clickRate }}>
+            <div className="h-full px-4 py-2" style={{ width: tableColumnWidths().clickRate }}>
               <span className="text-sm font-medium">
                 {groupMetrics.avgClickRate.toFixed(1)}%
               </span>
             </div>
-            <div className="h-full px-4" style={{ width: tableColumnWidths().status }}></div>
+            <div className="h-full px-4 py-2" style={{ width: tableColumnWidths().status }}></div>
           </div>
 
           {/* Table Container */}
           <div
             className={`
               w-full overflow-hidden
-              ${snapshot.isDragging ? "bg-muted rounded-sm shadow-md " : "bg-background"}
+              ${snapshot.isDragging ? "bg-muted rounded-none border-t-0 border rounded-b-sm " : "bg-background"}
               transition-all duration-300 ease-in-out
               ${isExpanded
                 ? "opacity-100 max-h-[800px]"
