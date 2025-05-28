@@ -23,6 +23,7 @@ export const createMockData = (totalEmails: number, groupNames: string[]): DataM
         createdAt: faker.date.past().toISOString(),
         updatedAt: faker.date.past().toISOString(),
         audience: faker.company.name(),
+        type: faker.helpers.arrayElement(['Newsletter', 'Promotional', 'Transactional', 'Announcement', 'Welcome']),
         openRate: faker.number.int({ min: 0, max: 100 }),
         clickRate: faker.number.int({ min: 0, max: 100 }),
         sentDate: faker.date.past().toISOString(),

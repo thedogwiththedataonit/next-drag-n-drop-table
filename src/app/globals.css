@@ -205,3 +205,36 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .highlight-animation {
+    animation: highlight 1.5s ease-in-out;
+  }
+
+  @keyframes highlight {
+    0% {
+      box-shadow: 0 0 0 0px rgba(59, 130, 246, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgba(59, 130, 246, 0.1);
+    }
+    100% {
+      box-shadow: 0 0 0 0px rgba(59, 130, 246, 0);
+    }
+  }
+}
