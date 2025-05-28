@@ -240,7 +240,7 @@ const Board: React.FC<BoardProps> = ({
           Add Group
         </Button>
       </div>
-      <div className="min-h-screen w-full border">
+      <div className="min-h-screen w-full border min-w-[1100px]">
         {/* Sortable Column Headers */}
         <SortableTableHeader
           sortField={sortField}

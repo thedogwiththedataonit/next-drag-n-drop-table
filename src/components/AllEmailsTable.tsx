@@ -95,7 +95,7 @@ const AllEmailsTable: React.FC<AllEmailsTableProps> = ({
           </Button>
         </Link>
       </div>
-      <div className="min-h-screen w-full border">
+      <div className="min-h-screen w-full border min-w-[1100px]">
         {/* Sortable Column Headers */}
         <SortableTableHeader
           sortField={sortField}

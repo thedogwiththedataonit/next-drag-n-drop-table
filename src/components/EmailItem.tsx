@@ -75,7 +75,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
         className={`px-4 py-2 flex-1 border-l-2 group-hover:border-muted-foreground border-transparent border-r-0`}
       >
         <div className="flex flex-col">
-          <div className="leading-relaxed">
+          <div className="leading-relaxed overflow-hidden text-ellipsis whitespace-nowrap max-w-[250px]">
             {email.name}
           </div>
         </div>

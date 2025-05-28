@@ -82,7 +82,7 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
             }`}
           >
             <span className="flex items-center justify-between">
-              Open Rate
+              Opened
               <span className="ml-2">{getSortIcon('openRate')}</span>
             </span>
           </button>
@@ -95,7 +95,7 @@ const SortableTableHeader: React.FC<SortableTableHeaderProps> = ({
             }`}
           >
             <span className="flex items-center justify-between">
-              Click Rate
+              Clicked
               <span className="ml-2">{getSortIcon('clickRate')}</span>
             </span>
           </button>

@@ -69,13 +69,13 @@ export function sortEmails(emails: Email[], field: SortField, order: SortOrder):
 export function tableColumnWidths(): Record<SortField, string> {
   return {
     name: 'auto',
-    status: "180px",
+    status: "130px",
     createdAt: "140px",
-    audience: "240px",
+    audience: "200px",
     updatedAt: "140px",
-    openRate: "130px",
-    clickRate: "120px",
-    sent: "120px",
+    openRate: "100px",
+    clickRate: "100px",
+    sent: "100px",
   }
 }
 
