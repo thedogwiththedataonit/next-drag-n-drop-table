@@ -15,6 +15,7 @@ interface EmailItemProps {
   index?: number;
   onEmailClick?: (email: Email) => void;
   disableDragging?: boolean;
+  selectedEmails: string[]; //ids of selected emails
 }
 
 function getStyle(provided: DraggableProvided, style?: React.CSSProperties) {
@@ -38,8 +39,10 @@ const EmailItem: React.FC<EmailItemProps> = ({
   index,
   onEmailClick,
   disableDragging = false,
+  selectedEmails,
 }) => {
-
+  console.log(selectedEmails)
+  console.log(email.id)
   const handleClick = (e: React.MouseEvent) => {
     // Don't trigger click while dragging
     if (isDragging) return;
@@ -58,14 +61,16 @@ const EmailItem: React.FC<EmailItemProps> = ({
       onClick={handleClick}
       style={{
         ...getStyle(provided, style),
-        cursor: isDragging ? 'grabbing' : disableDragging ? 'pointer' : 'grab',
+        cursor: isDragging ? 'grabbing' :  'pointer',
       }}
       className={`
-        text-sm group
+        text-sm 
         bg-background hover:bg-muted/40 transition-colors cursor-pointer
         ${isGroupedOver ? 'bg-muted/40' : ''}
         flex flex-row justify-start items-center
+        border-l-2 hover:border-muted-foreground border-r-0 hover:border-b-border/50 
         ${isDragging ? "rounded-sm shadow-lg border" : "rounded-none shadow-none border-b border-border/50"}
+        ${selectedEmails.includes(email.id) ? 'bg-muted/40 border-l-primary' : 'border-l-transparent'}
       `}
       data-is-dragging={isDragging}
       data-testid={email.id}
@@ -74,7 +79,7 @@ const EmailItem: React.FC<EmailItemProps> = ({
       
       {/* Name Cell */}
       <td 
-        className={`px-4 py-2 flex-1 border-l-2 group-hover:border-muted-foreground border-transparent border-r-0`}
+        className={`px-4 py-2 flex-1`}
       >
         <div className="flex flex-col">
           <div className="leading-relaxed overflow-hidden text-ellipsis whitespace-nowrap max-w-[350px] min-w-[350px]">

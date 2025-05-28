@@ -1,25 +1,42 @@
 import { Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { X } from "lucide-react";
+import { Email } from "@/lib/types";
+import { AIAnalysisChat } from "./chat";
 
-//create a function that has children and props
+interface ChatboxWrapperProps {
+    children: React.ReactNode;
+    selectedEmails: Email[];
+    currentChatOpen: boolean;
+    setCurrentChatOpen: (chatOpen: boolean) => void;
+    setSelectedEmails: (selectedEmails: Email[]) => void;
+}
 
-export const ChatboxWrapper = ({ children, ...props }: { children: React.ReactNode }) => {
-    const [chatOpen, setChatOpen] = useState(false);
+export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
+    const [chatOpen, setChatOpen] = useState(props.currentChatOpen);
+
+    //when the chatOpen state changes, bubble it up to the parent
+    useEffect(() => {
+        props.setCurrentChatOpen(chatOpen);
+    }, [chatOpen]);
 
     return (
         <>
             <div className="flex flex-row relative w-full">
-                <div className={`border transition-all duration-300 ease-in-out ${chatOpen ? 'scale-95 overflow-scroll h-[90vh] w-2/3' : 'scale-100 w-full'}`}>
-                    <div className={`min-h-screen w-full  min-w-[1100px]`}>
+                <div className={`border transition-all duration-300 ease-in-out ${chatOpen ? 'scale-95 overflow-scroll h-[90vh] w-2/3 shadow-lg rounded-lg' : ' w-full'}`}>
+                    <div id="board" className={`min-h-screen w-full  min-w-[1100px]`}>
                         {children}
                     </div>
                 </div>
                 { /* AI Chat*/}
                 <div className={`transition-all duration-300 ease-in-out animate-in fade-in-0 slide-in-from-right-1/2 ${chatOpen ? 'scale-95 overflow-scroll h-[90vh] w-1/3 block' : 'scale-100 hidden w-0'}`}>
-                    <div className={`bg-red-500 h-[90vh] w-[60vw]`}>
-                    </div>
+                    <AIAnalysisChat 
+                        selectedRows={new Set(props.selectedEmails.map(email => email.id))}
+                        groups={[]}
+                        isChatOpen={chatOpen}
+                        setIsChatOpen={setChatOpen}
+                    />
                 </div>
             </div>
 
@@ -33,7 +50,7 @@ export const ChatboxWrapper = ({ children, ...props }: { children: React.ReactNo
                                     onClick={() => {
                                         setChatOpen(true);
                                     }}
-                                    variant="outline" className="bg-primary text-primary-foreground hover:text-white hover:bg-primary/90 font-semibold" size="default">
+                                    variant="outline" className="bg-primary border-primary text-primary-foreground hover:text-white hover:bg-primary/90 font-semibold" size="default">
                                     <Sparkles className="w-4 h-4 mr-1" />
                                     Ask AI</Button>
                             )
@@ -41,8 +58,9 @@ export const ChatboxWrapper = ({ children, ...props }: { children: React.ReactNo
                                     <Button
                                         onClick={() => {
                                             setChatOpen(false);
+                                            props.setSelectedEmails([]);
                                         }}
-                                        variant="outline" className="bg-primary text-primary-foreground hover:text-white hover:bg-primary/90 font-semibold" size="default">
+                                        variant="outline" className="bg-primary border-primary text-primary-foreground hover:text-white hover:bg-primary/90 font-semibold" size="default">
                                         <X className="w-4 h-4 mr-1" />
                                         Cancel</Button>
                                 )

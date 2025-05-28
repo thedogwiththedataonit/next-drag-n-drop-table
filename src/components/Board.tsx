@@ -15,7 +15,7 @@ import Group from "./Group";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { ChatboxWrapper } from "./chatbox-wrapper";
-
+import { Sparkles, X } from "lucide-react";
 const DragDropContext = dynamic(
   () => import('@hello-pangea/dnd').then(mod => {
     return mod.DragDropContext;
@@ -39,8 +39,7 @@ const Board: React.FC<BoardProps> = ({
 }) => {
   const [groups, setGroups] = useState(initial);
   const [ordered, setOrdered] = useState(Object.keys(initial));
-  const [disableDragging, setDisableDragging] = useState(false);
-
+  const [chatOpen, setChatOpen] = useState(false);
   // Email sheet state
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -54,6 +53,8 @@ const Board: React.FC<BoardProps> = ({
     defaultValue: initialSortOrder,
     shallow: false
   });
+
+  const [selectedEmails, setSelectedEmails] = useState<Email[]>([]);
 
   // Apply sorting when sort parameters change
   useEffect(() => {
@@ -73,8 +74,17 @@ const Board: React.FC<BoardProps> = ({
   };
 
   const handleEmailClick = (email: Email) => {
-    setSelectedEmail(email);
-    setIsSheetOpen(true);
+    console.log(selectedEmails)
+    if (chatOpen) {
+      if (selectedEmails.map(e => e.id).includes(email.id)) {
+        setSelectedEmails(selectedEmails.filter(e => e.id !== email.id));
+      } else {
+        setSelectedEmails([...selectedEmails, email]);
+      }
+    } else {
+      setSelectedEmail(email);
+      setIsSheetOpen(true);
+    }
   };
 
   const handleSheetClose = () => {
@@ -242,102 +252,63 @@ const Board: React.FC<BoardProps> = ({
         <Button variant="outline" size="sm" onClick={() => AddGroup()}>
           Add Group
         </Button>
-        <Button variant="outline" size="sm" onClick={() => setDisableDragging(!disableDragging)}>
-          {disableDragging ? "Enable Dragging" : "Disable Dragging"}
+        <Button variant="outline" size="sm" onClick={() => setChatOpen(!chatOpen)}>
+          {chatOpen ? "Close Chat" : "Open Chat"}
         </Button>
 
       </div>
 
-      {
-        !disableDragging ? (
-          <div className={`min-h-screen w-full  min-w-[1100px] border`}>
-            {/* Sortable Column Headers */}
-            <SortableTableHeader
-              sortField={sortField}
-              sortOrder={sortOrder}
-              onSort={handleSort}
-            />
 
-            <DragDropContext onDragEnd={disableDragging ? () => { } : onDragEnd}>
-              <Droppable
-                droppableId="board"
-                type="GROUP"
-                direction="vertical"
-                isDropDisabled={disableDragging}
-                ignoreContainerClipping={Boolean(containerHeight)}
-                isCombineEnabled={false}
+      <ChatboxWrapper
+        selectedEmails={selectedEmails}
+        currentChatOpen={chatOpen}
+        setCurrentChatOpen={setChatOpen}
+        setSelectedEmails={setSelectedEmails}
+
+      >
+        {/* Sortable Column Headers */}
+        <SortableTableHeader
+          sortField={sortField}
+          sortOrder={sortOrder}
+          onSort={handleSort}
+        />
+        <DragDropContext onDragEnd={chatOpen ? () => { } : onDragEnd}>
+          <Droppable
+            droppableId="board"
+            type="GROUP"
+            direction="vertical"
+            isDropDisabled={chatOpen}
+            ignoreContainerClipping={Boolean(containerHeight)}
+            isCombineEnabled={false}
+          >
+            {(provided) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                className="min-h-screen min-w-full flex flex-col items-start"
+                style={{ height: containerHeight }}
               >
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className="min-h-screen min-w-full flex flex-col items-start"
-                    style={{ height: containerHeight }}
-                  >
-                    {ordered.map((key, index) => (
-                      <Group
-                        key={key}
-                        index={index}
-                        title={key}
-                        emails={groups[key]}
-                        isScrollable={withScrollableColumns}
-                        onEmailClick={handleEmailClick}
-                        deleteGroup={() => deleteGroup(key)}
-                        renameGroup={renameGroup}
-                        disableDragging={disableDragging}
-                      />
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </div>
-        ) : (
-          <ChatboxWrapper>
-            {/* Sortable Column Headers */}
-            <SortableTableHeader
-              sortField={sortField}
-              sortOrder={sortOrder}
-              onSort={handleSort}
-            />
-            <DragDropContext onDragEnd={disableDragging ? () => { } : onDragEnd}>
-              <Droppable
-                droppableId="board"
-                type="GROUP"
-                direction="vertical"
-                isDropDisabled={disableDragging}
-                ignoreContainerClipping={Boolean(containerHeight)}
-                isCombineEnabled={false}
-              >
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className="min-h-screen min-w-full flex flex-col items-start"
-                    style={{ height: containerHeight }}
-                  >
-                    {ordered.map((key, index) => (
-                      <Group
-                        key={key}
-                        index={index}
-                        title={key}
-                        emails={groups[key]}
-                        isScrollable={withScrollableColumns}
-                        onEmailClick={handleEmailClick}
-                        deleteGroup={() => deleteGroup(key)}
-                        renameGroup={renameGroup}
-                        disableDragging={disableDragging}
-                      />
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </ChatboxWrapper>
-        )
-      }
+                {ordered.map((key, index) => (
+                  <Group
+                    key={key}
+                    index={index}
+                    title={key}
+                    emails={groups[key]}
+                    isScrollable={withScrollableColumns}
+                    onEmailClick={handleEmailClick}
+                    deleteGroup={() => deleteGroup(key)}
+                    renameGroup={renameGroup}
+                    disableDragging={chatOpen}
+                    selectedEmails={selectedEmails.map(email => email.id)}
+                  />
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </ChatboxWrapper>
+
 
       {/* Email Sheet */}
       <EmailSheet

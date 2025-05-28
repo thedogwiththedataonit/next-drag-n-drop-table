@@ -6,7 +6,7 @@ import { GroupProps } from "@/lib/types";
 import EmailList from "./EmailList";
 import { tableColumnWidths } from "@/lib/utils";
 
-const Group: React.FC<GroupProps & { disableDragging?: boolean }> = ({
+const Group: React.FC<GroupProps & { disableDragging?: boolean, selectedEmails: string[] }> = ({
   title,
   emails,
   index,
@@ -14,8 +14,10 @@ const Group: React.FC<GroupProps & { disableDragging?: boolean }> = ({
   onEmailClick,
   deleteGroup,
   renameGroup,
-  disableDragging = false
+  disableDragging = false,
+  selectedEmails
 }) => {
+  console.log(selectedEmails)
   const [isExpanded, setIsExpanded] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editingTitle, setEditingTitle] = useState(title);
@@ -170,6 +172,7 @@ const Group: React.FC<GroupProps & { disableDragging?: boolean }> = ({
                 onEmailClick={onEmailClick}
                 deleteGroup={deleteGroup}
                 disableDragging={disableDragging}
+                selectedEmails={selectedEmails}
                 style={{
                   backgroundColor: snapshot.isDragging ? "#f0fdf4" : undefined, // green-50
                 }}

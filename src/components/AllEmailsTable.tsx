@@ -37,7 +37,7 @@ const AllEmailsTable: React.FC<AllEmailsTableProps> = ({
   // Email sheet state
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
+  const [currentChatOpen, setCurrentChatOpen] = useState(false);
 
   // Use nuqs for URL state management
   const [sortField, setSortField] = useQueryState('sortBy', {
@@ -48,6 +48,8 @@ const AllEmailsTable: React.FC<AllEmailsTableProps> = ({
     defaultValue: initialSortOrder,
     shallow: false
   });
+
+  const [selectedEmails, setSelectedEmails] = useState<Email[]>([]);
 
   // Flatten grouped data and apply sorting
   const [allEmails, setAllEmails] = useState<Email[]>([]);
@@ -77,8 +79,19 @@ const AllEmailsTable: React.FC<AllEmailsTableProps> = ({
   };
 
   const handleEmailClick = (email: Email) => {
-    setSelectedEmail(email);
-    setIsSheetOpen(true);
+    console.log(currentChatOpen);
+    if (currentChatOpen) {
+      // If email is already selected, remove it, otherwise add it
+      if (selectedEmails.map(e => e.id).includes(email.id)) {
+        setSelectedEmails(selectedEmails.filter(e => e.id !== email.id));
+      } else {
+        setSelectedEmails([...selectedEmails, email]);
+      }
+    }
+    else {
+      setSelectedEmail(email);
+      setIsSheetOpen(true);
+    }
   };
 
   const handleSheetClose = () => {
@@ -98,7 +111,12 @@ const AllEmailsTable: React.FC<AllEmailsTableProps> = ({
         </Link>
       </div>
 
-      <ChatboxWrapper>
+      <ChatboxWrapper 
+        selectedEmails={selectedEmails} 
+        currentChatOpen={currentChatOpen} 
+        setCurrentChatOpen={setCurrentChatOpen}
+        setSelectedEmails={setSelectedEmails}
+      >
         <SortableTableHeader
           sortField={sortField}
           sortOrder={sortOrder}
@@ -118,6 +136,7 @@ const AllEmailsTable: React.FC<AllEmailsTableProps> = ({
                   provided={mockDraggableProvided}
                   index={index}
                   onEmailClick={handleEmailClick}
+                  selectedEmails={selectedEmails.map((email) => email.id)}
                 />
               ))}
             </tbody>
