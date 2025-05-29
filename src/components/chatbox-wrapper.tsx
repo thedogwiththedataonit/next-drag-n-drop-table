@@ -17,8 +17,9 @@ interface ChatboxWrapperProps {
 
 export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
     const [chatOpen, setChatOpen] = useState(props.currentChatOpen);
-
     const [view, setView] = useState<'table' | 'dashboard'>('table');
+    const [resetChatKey, setResetChatKey] = useState(0);
+
     //when the chatOpen state changes, bubble it up to the parent
     useEffect(() => {
         props.setCurrentChatOpen(chatOpen);
@@ -29,7 +30,7 @@ export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
             <div className="flex flex-row relative w-full">
                 {/* Tab buttons - positioned outside the scrollable container */}
                 {chatOpen && (
-                    <div className="absolute -top-3 left-[26px] z-10 animate-in fade-in-0 slide-in-from-bottom duration-500">
+                    <div className="absolute -top-3.5 left-[24.5px] z-10 animate-in fade-in-0 slide-in-from-bottom duration-500">
                         <div className="flex flex-row justify-start items-end">
                             <Button 
                                 variant="ghost" 
@@ -66,6 +67,7 @@ export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
                 { /* AI Chat*/}
                 <div className={`border rounded-lg shadow-lg transition-all duration-300 ease-in-out animate-in fade-in-0 slide-in-from-right-1/2 ${chatOpen ? 'scale-95 overflow-scroll h-[90vh] w-1/3 block' : 'scale-100 hidden w-0'}`}>
                     <AIAnalysisChat
+                        key={resetChatKey}
                         selectedEmails={props.selectedEmails}
                         groups={[]}
                         handleOpenSheet={props.handleOpenSheet}
@@ -82,6 +84,9 @@ export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
                                 <Button
                                     onClick={() => {
                                         setChatOpen(true);
+                                        setView('table');
+                                        props.setSelectedEmails([]);
+                                        setResetChatKey(prev => prev + 1);
                                     }}
                                     variant="outline" className="bg-primary border-primary text-primary-foreground hover:text-white hover:bg-primary/90 font-semibold" size="default">
                                     <Sparkles className="w-4 h-4 mr-1" />
@@ -104,3 +109,4 @@ export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
         </>
     );
 };
+

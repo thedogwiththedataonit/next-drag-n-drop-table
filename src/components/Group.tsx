@@ -93,7 +93,7 @@ const Group: React.FC<GroupProps & { disableDragging?: boolean, selectedEmails: 
             {...(disableDragging ? {} : provided.dragHandleProps)}
             className={`
               flex items-center justify-start w-full
-              transition-colors duration-200 ease-in-out
+              transition-colors duration-200 ease-in-out 
               ${disableDragging ? "cursor-pointer" : "cursor-grab active:cursor-grabbing"} text-foreground
               ${isExpanded ? "rounded-t-sm" : "rounded-sm"}
               ${snapshot.isDragging
@@ -103,7 +103,7 @@ const Group: React.FC<GroupProps & { disableDragging?: boolean, selectedEmails: 
             `}
             aria-label={`${title} quote list`}
           >
-            <div className="flex-1 px-4 py-2">
+            <div className="flex-1 px-4 py-2 min-w-[380px] max-w-[380px]">
               <div className="flex items-center gap-2">
                 {isEditing ? (
                   <input
