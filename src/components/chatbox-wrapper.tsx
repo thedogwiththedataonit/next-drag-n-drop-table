@@ -5,6 +5,7 @@ import { X, Table, BarChart3 } from "lucide-react";
 import { Email } from "@/lib/types";
 import { AIAnalysisChat } from "./chat";
 import { DashboardView } from "./dashboard";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 interface ChatboxWrapperProps {
     children: React.ReactNode;
@@ -18,15 +19,17 @@ interface ChatboxWrapperProps {
 export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
     const [chatOpen, setChatOpen] = useState(props.currentChatOpen);
     const [view, setView] = useState<'table' | 'dashboard'>('table');
-    const [resetChatKey, setResetChatKey] = useState(0);
 
     //when the chatOpen state changes, bubble it up to the parent
     useEffect(() => {
         props.setCurrentChatOpen(chatOpen);
     }, [chatOpen]);
 
+    const hasSelectedEmails = props.selectedEmails.length > 0;
+    console.log(hasSelectedEmails);
+
     return (
-        <>
+        <TooltipProvider>
             <div className="flex flex-row relative w-full">
                 {/* Tab buttons - positioned outside the scrollable container */}
                 {chatOpen && (
@@ -41,15 +44,24 @@ export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
                                 <Table className="w-4 h-4 mr-2" />
                                 Table
                             </Button>
-                            <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className={`bg-background border border-border border-b-0 text-muted-foreground hover:text-foreground hover:bg-primary/20 font-medium rounded-b-none rounded-t-lg px-4 py-1 h-8 shadow-sm ml-1 ${view === 'dashboard' ? 'bg-primary text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground' : ''}`}
-                                onClick={() => setView('dashboard')}
-                            >
-                                <BarChart3 className="w-4 h-4 mr-2" />
-                                Dashboard
-                            </Button>
+                            <Tooltip delayDuration={0}>
+                                <TooltipTrigger asChild>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        className={`bg-background border border-border border-b-0 text-muted-foreground hover:text-foreground hover:bg-primary/20 font-medium rounded-b-none rounded-t-lg px-4 py-1 h-8 shadow-sm ml-1 ${view === 'dashboard' ? 'bg-primary text-primary-foreground hover:bg-primary/60 hover:text-primary-foreground' : ''} ${!hasSelectedEmails ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        onClick={() => hasSelectedEmails && setView('dashboard')}
+                                    >
+                                        <BarChart3 className="w-4 h-4 mr-2" />
+                                        Dashboard
+                                    </Button>
+                                </TooltipTrigger>
+                                {!hasSelectedEmails && (
+                                    <TooltipContent>
+                                        <p>Select Emails to start analyzing</p>
+                                    </TooltipContent>
+                                )}
+                            </Tooltip>
                         </div>
                     </div>
                 )}
@@ -67,7 +79,6 @@ export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
                 { /* AI Chat*/}
                 <div className={`border rounded-lg shadow-lg transition-all duration-300 ease-in-out animate-in fade-in-0 slide-in-from-right-1/2 ${chatOpen ? 'scale-95 overflow-scroll h-[90vh] w-1/3 block' : 'scale-100 hidden w-0'}`}>
                     <AIAnalysisChat
-                        key={resetChatKey}
                         selectedEmails={props.selectedEmails}
                         groups={[]}
                         handleOpenSheet={props.handleOpenSheet}
@@ -86,7 +97,8 @@ export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
                                         setChatOpen(true);
                                         setView('table');
                                         props.setSelectedEmails([]);
-                                        setResetChatKey(prev => prev + 1);
+                                        
+                                        
                                     }}
                                     variant="outline" className="bg-primary border-primary text-primary-foreground hover:text-white hover:bg-primary/90 font-semibold" size="default">
                                     <Sparkles className="w-4 h-4 mr-1" />
@@ -97,6 +109,7 @@ export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
                                         onClick={() => {
                                             setChatOpen(false);
                                             props.setSelectedEmails([]);
+                                            setView('table');
                                         }}
                                         variant="outline" className="bg-primary border-primary text-primary-foreground hover:text-white hover:bg-primary/90 font-semibold" size="default">
                                         <X className="w-4 h-4 mr-1" />
@@ -106,7 +119,7 @@ export const ChatboxWrapper = ({ children, ...props }: ChatboxWrapperProps) => {
                     </div>
                 </div>
             </div>
-        </>
+        </TooltipProvider>
     );
 };
 

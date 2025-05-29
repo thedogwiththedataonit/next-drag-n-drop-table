@@ -10,7 +10,6 @@ import SortableTableHeader from "./SortableTableHeader";
 import { DraggableProvided } from "@hello-pangea/dnd";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { Sparkles, X } from "lucide-react";
 import { ChatboxWrapper } from "./chatbox-wrapper";
 interface AllEmailsTableProps {
   initial: DataMap;

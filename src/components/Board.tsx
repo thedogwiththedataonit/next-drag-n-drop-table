@@ -15,7 +15,6 @@ import Group from "./Group";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { ChatboxWrapper } from "./chatbox-wrapper";
-import { Sparkles, X } from "lucide-react";
 const DragDropContext = dynamic(
   () => import('@hello-pangea/dnd').then(mod => {
     return mod.DragDropContext;
@@ -251,9 +250,6 @@ const Board: React.FC<BoardProps> = ({
         </Link>
         <Button variant="outline" size="sm" onClick={() => AddGroup()}>
           Add Group
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => setChatOpen(!chatOpen)}>
-          {chatOpen ? "Close Chat" : "Open Chat"}
         </Button>
 
       </div>

@@ -1,12 +1,13 @@
 import { Email } from "@/lib/types";
 import { useState, useEffect, useRef } from "react";
-import { TrendingUp, TrendingDown, Users, Mail, BarChart3, PieChart as PieChartIcon, Calendar, Target, Activity, Zap } from "lucide-react";
+import { TrendingUp, Mail, BarChart3, Calendar, Zap } from "lucide-react";
 import { createSwapy } from 'swapy'
+import type { Swapy } from 'swapy'
 import { Card } from "@/components/ui/card";
 
 export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
     const [isVisible, setIsVisible] = useState(false);
-    const swapy = useRef(null)
+    const swapy = useRef<Swapy | null>(null)
     const container = useRef(null)
 
 
@@ -18,7 +19,7 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
         if (container.current) {
             swapy.current = createSwapy(container.current)
 
-          // Your event listeners
+            // Your event listeners
             swapy.current.onSwap((event) => {
                 console.log('swap', event);
             })
@@ -49,8 +50,8 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
     }
 
     return (
-        <div ref={container} className={`p-4 overflow-y-auto ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-            <div className="grid grid-cols-3 gap-4 h-full">
+        <div ref={container} className={`p-4 overflow-y-auto scale-[1.053] origin-top-left ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+            <div className="grid grid-cols-3 gap-4 h-full mr-10">
                 <div data-swapy-slot="slot-1" className="aspect-square">
                     <Card data-swapy-item="card-1" className="w-full h-full p-4 flex items-center justify-center">
                         <div className="text-center">
@@ -61,15 +62,7 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
                     </Card>
                 </div>
 
-                <div data-swapy-slot="slot-2" className="aspect-square">
-                    <Card data-swapy-item="card-2" className="w-full h-full p-4 flex items-center justify-center">
-                        <div className="text-center">
-                            <Users className="h-8 w-8 mx-auto mb-2 text-green-500" />
-                            <h3 className="font-semibold">Unique Senders</h3>
-                            <p className="text-2xl font-bold">{new Set(selectedEmails.map(e => e.from)).size}</p>
-                        </div>
-                    </Card>
-                </div>
+                
 
                 <div data-swapy-slot="slot-3" className="aspect-square">
                     <Card data-swapy-item="card-3" className="w-full h-full p-4 flex items-center justify-center">
@@ -86,27 +79,7 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
                         <div className="text-center">
                             <Calendar className="h-8 w-8 mx-auto mb-2 text-orange-500" />
                             <h3 className="font-semibold">This Week</h3>
-                            <p className="text-2xl font-bold">{selectedEmails.filter(e => new Date(e.date) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length}</p>
-                        </div>
-                    </Card>
-                </div>
-
-                <div data-swapy-slot="slot-5" className="aspect-square">
-                    <Card data-swapy-item="card-5" className="w-full h-full p-4 flex items-center justify-center">
-                        <div className="text-center">
-                            <Target className="h-8 w-8 mx-auto mb-2 text-red-500" />
-                            <h3 className="font-semibold">Priority High</h3>
-                            <p className="text-2xl font-bold">{selectedEmails.filter(e => e.priority === 'high').length}</p>
-                        </div>
-                    </Card>
-                </div>
-
-                <div data-swapy-slot="slot-6" className="aspect-square">
-                    <Card data-swapy-item="card-6" className="w-full h-full p-4 flex items-center justify-center">
-                        <div className="text-center">
-                            <Activity className="h-8 w-8 mx-auto mb-2 text-indigo-500" />
-                            <h3 className="font-semibold">Read Rate</h3>
-                            <p className="text-2xl font-bold">{Math.round((selectedEmails.filter(e => e.read).length / selectedEmails.length) * 100)}%</p>
+                            <p className="text-2xl font-bold">{selectedEmails.filter(e => new Date(e.sentTime) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length}</p>
                         </div>
                     </Card>
                 </div>
@@ -121,25 +94,7 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
                     </Card>
                 </div>
 
-                <div data-swapy-slot="slot-8" className="aspect-square">
-                    <Card data-swapy-item="card-8" className="w-full h-full p-4 flex items-center justify-center">
-                        <div className="text-center">
-                            <PieChartIcon className="h-8 w-8 mx-auto mb-2 text-teal-500" />
-                            <h3 className="font-semibold">Categories</h3>
-                            <p className="text-2xl font-bold">8</p>
-                        </div>
-                    </Card>
-                </div>
 
-                <div data-swapy-slot="slot-9" className="aspect-square">
-                    <Card data-swapy-item="card-9" className="w-full h-full p-4 flex items-center justify-center">
-                        <div className="text-center">
-                            <TrendingDown className="h-8 w-8 mx-auto mb-2 text-pink-500" />
-                            <h3 className="font-semibold">Spam Filtered</h3>
-                            <p className="text-2xl font-bold">24</p>
-                        </div>
-                    </Card>
-                </div>
             </div>
         </div>
     );

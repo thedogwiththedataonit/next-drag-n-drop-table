@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef } from "react"
-import { Send, X, RefreshCcw, Copy, Share2, ThumbsUp, ThumbsDown, ChevronLeft, Mail, Plus, Minus, Users, MessageSquare, Clock, ChevronRight, Search, ArrowLeft } from "lucide-react"
+import { Send, RefreshCcw, Copy, Share2, ThumbsUp, ThumbsDown, Mail, Plus, Minus, Users, MessageSquare, Clock, ChevronRight, Search, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Email } from "@/lib/types"
 
@@ -159,7 +159,6 @@ export function AIAnalysisChat({
     const [streamingWords, setStreamingWords] = useState<StreamingWord[]>([])
     const [streamingMessageId, setStreamingMessageId] = useState<string | null>(null)
     const [completedMessages, setCompletedMessages] = useState<Set<string>>(new Set(["initial-message"]))
-    const [activeSectionId, setActiveSectionId] = useState<string | null>(null)
 
     // Refs
     const chatContainerRef = useRef<HTMLDivElement>(null)
@@ -228,7 +227,6 @@ export function AIAnalysisChat({
     useEffect(() => {
         if (messages.length === 0) {
             setMessageSections([])
-            setActiveSectionId(null)
             return
         }
 
@@ -261,8 +259,6 @@ export function AIAnalysisChat({
                     sectionIndex: sections.length,
                 }
 
-                // Update active section ID
-                setActiveSectionId(newSectionId)
             } else {
                 // Add to current section
                 currentSection.messages.push(message)
