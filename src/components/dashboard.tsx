@@ -2,6 +2,7 @@ import { Email } from "@/lib/types";
 import { useState, useEffect } from "react";
 import { TrendingUp, TrendingDown, Users, Mail, BarChart3, PieChart as PieChartIcon, Calendar, Target, Activity, Zap } from "lucide-react";
 
+
 interface MetricCardProps {
     title: string;
     value: string;
@@ -459,13 +460,9 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
 
     return (
         <div className={`p-3 sm:p-6 h-full overflow-y-auto transition-all duration-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-            <div className="mb-4 sm:mb-8">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">Analytics Dashboard</h1>
-                <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Insights from {selectedEmails.length} selected emails</p>
-            </div>
 
             {/* Metrics Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-1 sm:gap-2">
                 <MetricCard
                     title="Total Emails"
                     value={analytics.totalEmails.toString()}
@@ -501,10 +498,10 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
             </div>
 
             {/* Charts Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-2">
                 {/* Email Status Distribution */}
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center space-x-2 mb-4 sm:mb-6">
+                    <div className="flex items-center space-x-2">
                         <PieChartIcon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                         <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">Status Distribution</h3>
                     </div>
@@ -513,7 +510,7 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
 
                 {/* Email Type Distribution */}
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center space-x-2 mb-4 sm:mb-6">
+                    <div className="flex items-center space-x-2">
                         <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
                         <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">Email Types</h3>
                     </div>
@@ -522,7 +519,7 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
 
                 {/* Performance Trend */}
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center space-x-2 mb-4 sm:mb-6">
+                    <div className="flex items-center space-x-2">
                         <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                         <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">Open Rate Trend</h3>
                     </div>
@@ -531,7 +528,7 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
 
                 {/* Performance by Status */}
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center space-x-2 mb-4 sm:mb-6">
+                    <div className="flex items-center space-x-2">
                         <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                         <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">Open Rate by Status</h3>
                     </div>
@@ -551,8 +548,8 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
             </div>
 
             {/* Audience Insights */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700 mb-4 sm:mb-8">
-                <div className="flex items-center space-x-2 mb-4 sm:mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center space-x-2">
                     <Users className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
                     <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">Top Audiences</h3>
                 </div>
@@ -571,9 +568,9 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
             </div>
 
             {/* Additional Insights */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-2">
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center space-x-2 mb-3 sm:mb-4">
+                    <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                         <h4 className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-white">Recent Activity</h4>
                     </div>
@@ -582,7 +579,7 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
                 </div>
 
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center space-x-2 mb-3 sm:mb-4">
+                    <div className="flex items-center space-x-2">
                         <Target className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
                         <h4 className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-white">Engagement Score</h4>
                     </div>
@@ -593,7 +590,7 @@ export function DashboardView({ selectedEmails }: { selectedEmails: Email[] }) {
                 </div>
 
                 <div className="bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center space-x-2 mb-3 sm:mb-4">
+                    <div className="flex items-center space-x-2 ">
                         <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
                         <h4 className="text-sm sm:text-lg font-semibold text-gray-900 dark:text-white">Best Performer</h4>
                     </div>
