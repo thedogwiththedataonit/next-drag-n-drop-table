@@ -103,7 +103,7 @@ const Group: React.FC<GroupProps & { disableDragging?: boolean, selectedEmails: 
             `}
             aria-label={`${title} quote list`}
           >
-            <div className="flex-1 px-4 py-2 min-w-[380px] max-w-[380px]">
+            <div className="flex-1 px-4 py-2 min-w-[380px]">
               <div className="flex items-center gap-2">
                 {isEditing ? (
                   <input
